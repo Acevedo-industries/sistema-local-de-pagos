@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'MyHomePage.dart';
 
 class LoginScreen extends StatelessWidget {
+  const LoginScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -117,13 +120,21 @@ class LoginScreen extends StatelessWidget {
                 Padding(
                   padding: EdgeInsets.fromLTRB(0, 30, 0, 16),
                   child: MaterialButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => MyHomePage()),
+                      );
+                    },
                     color: Color(0xffff5630),
                     elevation: 3,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12.0),
                     ),
                     padding: EdgeInsets.all(16),
+                    textColor: Color(0xffffffff),
+                    height: 40,
+                    minWidth: MediaQuery.of(context).size.width,
                     child: Text(
                       "Entrar",
                       style: TextStyle(
@@ -132,9 +143,6 @@ class LoginScreen extends StatelessWidget {
                         fontStyle: FontStyle.normal,
                       ),
                     ),
-                    textColor: Color(0xffffffff),
-                    height: 40,
-                    minWidth: MediaQuery.of(context).size.width,
                   ),
                 ),
                 Align(

@@ -6,12 +6,24 @@ import 'FavoritesPage.dart';
 import 'LoginScreen.dart';
 import 'RegisterScreen.dart';
 import 'SettingScreen.dart';
-import 'HomeScreen.dart';
+
 import 'NoDataFoundScreen.dart';
 import 'ChangePasswordScreen.dart';
-import 'Tablas.dart';
 
-void main() {
+//void main() {
+//  runApp(MyApp());
+//}
+
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+//import 'package:sqflite/sqflite.dart';
+
+Future main() async {
+  //if (Platform.isWindows || Platform.isLinux) {
+  // Initialize FFI
+  sqfliteFfiInit();
+  // Change the default factory
+  databaseFactory = databaseFactoryFfi;
+  //}
   runApp(MyApp());
 }
 
@@ -28,13 +40,13 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
         ),
-        home: MyHomePage(),
+        home: LoginScreen(),
       ),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
+/* class MyHomePage extends StatefulWidget {
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
@@ -47,7 +59,7 @@ class _MyHomePageState extends State<MyHomePage> {
     Widget page;
 
     if (selectedIndex == 0) {
-      page = Tablas();
+      page = LoginScreen();
     } else {
       page = FavoritesPage();
     }
@@ -162,3 +174,4 @@ class BigCard extends StatelessWidget {
     );
   }
 }
+ */
