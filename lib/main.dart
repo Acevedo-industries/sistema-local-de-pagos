@@ -3,6 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'FavoritesPage.dart';
+import 'LoginScreen.dart';
+import 'RegisterScreen.dart';
+import 'SettingScreen.dart';
+import 'HomeScreen.dart';
+import 'NoDataFoundScreen.dart';
+import 'ChangePasswordScreen.dart';
+import 'Tablas.dart';
 
 void main() {
   runApp(MyApp());
@@ -40,7 +47,7 @@ class _MyHomePageState extends State<MyHomePage> {
     Widget page;
 
     if (selectedIndex == 0) {
-      page = GeneratorPage();
+      page = Tablas();
     } else {
       page = FavoritesPage();
     }
