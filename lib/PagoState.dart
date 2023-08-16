@@ -9,6 +9,7 @@ class PagoState extends ChangeNotifier {
   var pagoList = <Pago>[];
 
   void queryByName(String name) async {
+    final newname = name.trim().replaceAll(RegExp(r' '), '%');
     //var databasesPath = await getDatabasesPath();
     //String path = join(databasesPath, 'pagos.db');
     var db = await openDatabase('pagos.db');
@@ -16,8 +17,8 @@ class PagoState extends ChangeNotifier {
     // Query the table for all The Dogs.
     final List<Map<String, dynamic>> pagosquery = await db.query("pagos",
         //columns: [columnId, columnDone, columnTitle],
-        where: 'nombre = ?',
-        whereArgs: [name]);
+        where: 'nombre LIKE ?',
+        whereArgs: [("%$newname%")]);
 
     //if (pagos.length > 0) {
     //  return pagos.fromMap(maps.first);
