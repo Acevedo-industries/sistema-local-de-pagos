@@ -22,6 +22,19 @@ class PagoState extends ChangeNotifier {
     });
   }
 
+  Future<List<Pago>> getPrediales() async {
+    var db = await openDatabase('pagos.db');
+
+    final List<Map<String, dynamic>> pagosquerytequios =
+        await db.query("pagos", where: 'tipo = ?', whereArgs: ["predial"]);
+
+    await db.close();
+
+    return List.generate(pagosquerytequios.length, (i) {
+      return Pago.fromJson(pagosquerytequios[i]);
+    });
+  }
+
   void queryByName(String name) async {
     final newname = name.trim().replaceAll(RegExp(r' '), '%');
     //var databasesPath = await getDatabasesPath();

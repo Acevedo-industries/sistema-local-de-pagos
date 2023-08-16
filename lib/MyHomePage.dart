@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'HomeScreen.dart';
 import 'TablasTequios.dart';
+import 'TablasPrediales.dart';
 import 'RegisterScreen.dart';
 import 'SettingScreen.dart';
 import 'NoDataFoundScreen.dart';
@@ -25,10 +26,12 @@ class _MyHomePageState extends State<MyHomePage> {
     } else if (selectedIndex == 1) {
       page = TablasTequios();
     } else if (selectedIndex == 2) {
-      page = RegisterScreen();
+      page = TablasPrediales();
     } else if (selectedIndex == 3) {
-      page = SettingScreen();
+      page = RegisterScreen();
     } else if (selectedIndex == 4) {
+      page = SettingScreen();
+    } else if (selectedIndex == 5) {
       page = LoginScreen();
       Navigator.pop(context);
     } else {
@@ -44,23 +47,27 @@ class _MyHomePageState extends State<MyHomePage> {
                 extended: constraints.maxWidth >= 600,
                 destinations: [
                   NavigationRailDestination(
-                    icon: Icon(Icons.home),
+                    icon: Icon(Icons.search),
                     label: Text('Buscar'),
                   ),
                   NavigationRailDestination(
-                    icon: Icon(Icons.favorite),
+                    icon: Icon(Icons.card_membership),
                     label: Text('Tequios'),
                   ),
                   NavigationRailDestination(
-                    icon: Icon(Icons.favorite),
+                    icon: Icon(Icons.card_membership),
+                    label: Text('Prediales'),
+                  ),
+                  NavigationRailDestination(
+                    icon: Icon(Icons.verified_user),
                     label: Text('Crear usuario'),
                   ),
                   NavigationRailDestination(
-                    icon: Icon(Icons.favorite),
+                    icon: Icon(Icons.construction_sharp),
                     label: Text('Configuracion'),
                   ),
                   NavigationRailDestination(
-                    icon: Icon(Icons.favorite),
+                    icon: Icon(Icons.exit_to_app),
                     label: Text('Salir'),
                   ),
                 ],
