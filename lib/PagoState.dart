@@ -7,6 +7,20 @@ import 'Pago.dart';
 
 class PagoState extends ChangeNotifier {
   var pagoList = <Pago>[];
+  var tequios = <Pago>[];
+
+  Future<List<Pago>> getTequios() async {
+    var db = await openDatabase('pagos.db');
+
+    final List<Map<String, dynamic>> pagosquerytequios =
+        await db.query("pagos", where: 'tipo = ?', whereArgs: ["tequio"]);
+
+    await db.close();
+
+    return List.generate(pagosquerytequios.length, (i) {
+      return Pago.fromJson(pagosquerytequios[i]);
+    });
+  }
 
   void queryByName(String name) async {
     final newname = name.trim().replaceAll(RegExp(r' '), '%');

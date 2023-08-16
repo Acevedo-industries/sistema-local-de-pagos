@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'HomeScreen.dart';
-import 'Tablas.dart';
+import 'TablasTequios.dart';
 import 'RegisterScreen.dart';
 import 'SettingScreen.dart';
 import 'NoDataFoundScreen.dart';
@@ -23,7 +23,7 @@ class _MyHomePageState extends State<MyHomePage> {
     if (selectedIndex == 0) {
       page = HomeScreenMain();
     } else if (selectedIndex == 1) {
-      page = Tablas();
+      page = TablasTequios();
     } else if (selectedIndex == 2) {
       page = RegisterScreen();
     } else if (selectedIndex == 3) {
@@ -49,7 +49,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   NavigationRailDestination(
                     icon: Icon(Icons.favorite),
-                    label: Text('Tablas'),
+                    label: Text('Tequios'),
                   ),
                   NavigationRailDestination(
                     icon: Icon(Icons.favorite),
