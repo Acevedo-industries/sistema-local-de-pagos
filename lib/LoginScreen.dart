@@ -145,6 +145,34 @@ class LoginScreen extends StatelessWidget {
                     ),
                   ),
                 ),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(0, 30, 0, 16),
+                  child: MaterialButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => MyHomePage()),
+                      );
+                    },
+                    color: Color(0xff6580db),
+                    elevation: 3,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                    padding: EdgeInsets.all(16),
+                    textColor: Color(0xffffffff),
+                    height: 40,
+                    minWidth: MediaQuery.of(context).size.width,
+                    child: Text(
+                      "Entrar sin cuenta",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        fontStyle: FontStyle.normal,
+                      ),
+                    ),
+                  ),
+                ),
                 Align(
                   alignment: Alignment.center,
                   child: Row(

@@ -5,6 +5,7 @@ import 'Tablas.dart';
 import 'RegisterScreen.dart';
 import 'SettingScreen.dart';
 import 'NoDataFoundScreen.dart';
+import 'LoginScreen.dart';
 import 'ChangePasswordScreen.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -27,6 +28,9 @@ class _MyHomePageState extends State<MyHomePage> {
       page = RegisterScreen();
     } else if (selectedIndex == 3) {
       page = SettingScreen();
+    } else if (selectedIndex == 4) {
+      page = LoginScreen();
+      Navigator.pop(context);
     } else {
       page = NoDataFoundScreen();
     }
@@ -54,6 +58,10 @@ class _MyHomePageState extends State<MyHomePage> {
                   NavigationRailDestination(
                     icon: Icon(Icons.favorite),
                     label: Text('Configuracion'),
+                  ),
+                  NavigationRailDestination(
+                    icon: Icon(Icons.favorite),
+                    label: Text('Salir'),
                   ),
                 ],
                 selectedIndex: selectedIndex,
