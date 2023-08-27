@@ -8,6 +8,7 @@ import 'SettingScreen.dart';
 import 'NoDataFoundScreen.dart';
 import 'LoginScreen.dart';
 import 'ChangePasswordScreen.dart';
+import 'globals.dart' as globals;
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -15,25 +16,29 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  var selectedIndex = 0;
+  var selectedIndex = 1;
 
   @override
   Widget build(BuildContext context) {
     Widget page;
 
+    int exitValue = globals.enablefield ? 6 : 4;
+
     if (selectedIndex == 0) {
       page = HomeScreenMain();
     } else if (selectedIndex == 1) {
-      page = TablasTequios();
+      page = HomeScreenMain();
     } else if (selectedIndex == 2) {
-      page = TablasPrediales();
+      page = TablasTequios();
     } else if (selectedIndex == 3) {
-      page = RegisterScreen();
-    } else if (selectedIndex == 4) {
-      page = SettingScreen();
-    } else if (selectedIndex == 5) {
+      page = TablasPrediales();
+    } else if (selectedIndex == exitValue) {
       page = LoginScreen();
       Navigator.pop(context);
+    } else if (selectedIndex == 4) {
+      page = RegisterScreen();
+    } else if (selectedIndex == 5) {
+      page = SettingScreen();
     } else {
       page = NoDataFoundScreen();
     }
@@ -47,6 +52,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 extended: constraints.maxWidth >= 600,
                 destinations: [
                   NavigationRailDestination(
+                    icon: Icon(Icons.account_circle),
+                    label: Text(globals.userLogged.username ?? ''),
+                  ),
+                  NavigationRailDestination(
                     icon: Icon(Icons.search),
                     label: Text('Buscar'),
                   ),
@@ -58,14 +67,16 @@ class _MyHomePageState extends State<MyHomePage> {
                     icon: Icon(Icons.card_membership),
                     label: Text('Prediales'),
                   ),
-                  NavigationRailDestination(
-                    icon: Icon(Icons.verified_user),
-                    label: Text('Crear usuario'),
-                  ),
-                  NavigationRailDestination(
-                    icon: Icon(Icons.construction_sharp),
-                    label: Text('Configuracion'),
-                  ),
+                  if (globals.enablefield)
+                    NavigationRailDestination(
+                      icon: Icon(Icons.verified_user),
+                      label: Text('Crear usuario'),
+                    ),
+                  if (globals.enablefield)
+                    NavigationRailDestination(
+                      icon: Icon(Icons.construction_sharp),
+                      label: Text('Configuracion'),
+                    ),
                   NavigationRailDestination(
                     icon: Icon(Icons.exit_to_app),
                     label: Text('Salir'),
