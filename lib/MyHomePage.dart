@@ -60,7 +60,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 destinations: [
                   NavigationRailDestination(
                     icon: Icon(Icons.account_circle),
-                    label: Text(globals.userLogged.username ?? ''),
+                    label: Text(globals.userLogged.username ?? 'Desconocido'),
                   ),
                   NavigationRailDestination(
                     icon: Icon(Icons.search),
