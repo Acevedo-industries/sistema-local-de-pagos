@@ -33,10 +33,12 @@ class UserState extends ChangeNotifier {
     final newUsername = username.trim();
     final newPassword = password.trim();
 
+    print(connection.host);
+
     try {
       await connection.open();
     } on Exception catch (_) {
-      print("*******ERROR***********");
+      await connection.close();
       return Usuario(
           index: 0,
           username: "sinConexion",

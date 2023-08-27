@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'HomeScreen.dart';
 import 'TablasTequios.dart';
@@ -35,7 +36,11 @@ class _MyHomePageState extends State<MyHomePage> {
       page = TablasPrediales();
     } else if (selectedIndex == exitValue) {
       page = LoginScreen();
-      exit(0);
+      if (Platform.isAndroid) {
+        SystemNavigator.pop();
+      } else {
+        exit(0);
+      }
       //Navigator.pop(context);
     } else if (selectedIndex == 4) {
       page = RegisterScreen();
