@@ -3,7 +3,7 @@ import 'dart:ffi';
 class Usuario {
   final String? username;
   final String? contrasenia;
-  final int? rol;
+  final String? rol;
   final int index;
 
   Usuario({this.username, this.contrasenia, this.rol, required this.index});

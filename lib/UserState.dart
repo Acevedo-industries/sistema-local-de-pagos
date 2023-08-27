@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:postgres/postgres.dart';
 import 'Usuario.dart';
 
-class PagoState extends ChangeNotifier {
+class UserState extends ChangeNotifier {
   var usuariosList = <Usuario>[];
 
   Future<List<Usuario>> getUsuarios() async {
@@ -20,6 +20,8 @@ class PagoState extends ChangeNotifier {
       usuariosList.add(
           Usuario(index: 1, username: row[0], contrasenia: "", rol: row[1]));
     }
+
+    print(usuariosList);
 
     return usuariosList;
   }
@@ -40,7 +42,24 @@ class PagoState extends ChangeNotifier {
           "aPassword": newPassword,
         });
 
-    return Usuario(
-        index: 1, username: results[0][0], contrasenia: "", rol: results[0][1]);
+    print(results);
+
+    Usuario findUser = Usuario(
+        index: 0,
+        username: "noEncontrado",
+        contrasenia: "",
+        rol: "noEncontrado");
+    // Usuario(index: 0, username: "Anonymus", contrasenia: "", rol: "lector");
+
+    if (results.isNotEmpty) {
+      findUser = Usuario(
+          index: 1,
+          username: results[0][0],
+          contrasenia: "",
+          rol: results[0][1]);
+    }
+    print(findUser);
+
+    return findUser;
   }
 }

@@ -1,11 +1,50 @@
+import 'package:app/Usuario.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'components/ErrorMessage.dart';
 import 'MyHomePage.dart';
+import 'UserState.dart';
+import 'globals.dart' as globals;
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (context) => UserState(),
+      child: MaterialApp(
+        title: 'Namer App',
+        theme: ThemeData(
+          useMaterial3: true,
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
+        ),
+        home: LoginScreenView(),
+      ),
+    );
+  }
+}
+
+class LoginScreenView extends StatefulWidget {
+  @override
+  LoginScreenState createState() => LoginScreenState();
+}
+
+class LoginScreenState extends State<LoginScreenView> {
+  final userController = TextEditingController(text: "superadmin");
+  final passwordController = TextEditingController(text: "8ggf7d78d7");
+  String textMessageError = '';
+
+  void _changedTextMessageError(String text) {
+    setState(() {
+      textMessageError = text;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var appState = context.watch<UserState>();
+
     return Scaffold(
       backgroundColor: Color(0xffffffff),
       body: Align(
@@ -29,10 +68,11 @@ class LoginScreen extends StatelessWidget {
                     color: Color(0xff000000),
                   ),
                 ),
+                ErrorMessage(textMessageError),
                 Padding(
-                  padding: EdgeInsets.fromLTRB(0, 30, 0, 16),
+                  padding: EdgeInsets.fromLTRB(0, 10, 0, 16),
                   child: TextField(
-                    controller: TextEditingController(),
+                    controller: userController,
                     obscureText: false,
                     textAlign: TextAlign.start,
                     maxLines: 1,
@@ -76,7 +116,7 @@ class LoginScreen extends StatelessWidget {
                 Padding(
                   padding: EdgeInsets.fromLTRB(0, 0, 0, 16),
                   child: TextField(
-                    controller: TextEditingController(),
+                    controller: passwordController,
                     obscureText: false,
                     textAlign: TextAlign.start,
                     maxLines: 1,
@@ -121,10 +161,26 @@ class LoginScreen extends StatelessWidget {
                   padding: EdgeInsets.fromLTRB(0, 30, 0, 16),
                   child: MaterialButton(
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => MyHomePage()),
-                      );
+                      appState
+                          .queryByUsernameAndPassword(
+                              userController.text, passwordController.text)
+                          .then((value) => {
+                                if (value.rol == "noEncontrado")
+                                  {
+                                    _changedTextMessageError(
+                                        "Usuario o contraseña incorrectos.")
+                                  }
+                                else
+                                  {
+                                    _changedTextMessageError(""),
+                                    globals.UserLogged = value,
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => MyHomePage()),
+                                    )
+                                  }
+                              });
                     },
                     color: Color(0xffff5630),
                     elevation: 3,
