@@ -192,7 +192,8 @@ class LoginScreenState extends State<LoginScreenView> {
                                   {
                                     _changedTextMessageOffline(
                                         "Servidor no encontrado."),
-                                    _changedButtonEnable()
+                                    _changedButtonEnable(),
+                                    null
                                   }
                                 else
                                   {
