@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:postgres/postgres.dart';
 import 'Usuario.dart';
+import 'globals.dart' as globals;
 
 class UserState extends ChangeNotifier {
   var usuariosList = <Usuario>[];
-  var connection = PostgreSQLConnection("192.168.0.57", 5433, "pagos",
-      username: "postgres", password: "josue");
+  var connection = globals.connectionPostgreSQL;
 
   Future<List<Usuario>> getUsuarios() async {
     await connection.open();

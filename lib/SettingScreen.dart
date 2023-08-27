@@ -42,21 +42,30 @@ class SettingScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisSize: MainAxisSize.max,
                 children: [
-                  Text(
-                    "URL Base de datos",
-                    textAlign: TextAlign.start,
-                    overflow: TextOverflow.clip,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w400,
-                      fontStyle: FontStyle.normal,
-                      fontSize: 16,
-                      color: Color(0xff000000),
+                  Expanded(
+                    flex: 1,
+                    child: MaterialButton(
+                      onPressed: () {},
+                      color: Color(0xffffffff),
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.zero,
+                        side: BorderSide(color: Color(0xff808080), width: 1),
+                      ),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      child: Text(
+                        "Descargar datos",
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                          fontStyle: FontStyle.normal,
+                        ),
+                      ),
+                      textColor: Color(0xff000000),
+                      height: 40,
+                      minWidth: 140,
                     ),
-                  ),
-                  Icon(
-                    Icons.arrow_forward_ios,
-                    color: Color(0xff78797c),
-                    size: 16,
                   ),
                 ],
               ),
