@@ -5,14 +5,16 @@ import 'Usuario.dart';
 
 class UserState extends ChangeNotifier {
   var usuariosList = <Usuario>[];
+  var connection = PostgreSQLConnection("192.168.0.57", 5433, "pagos",
+      username: "postgres", password: "josue");
 
   Future<List<Usuario>> getUsuarios() async {
-    var connection = PostgreSQLConnection("192.168.0.57", 5433, "pagos",
-        username: "postgres", password: "josue");
     await connection.open();
 
     List<List<dynamic>> resultslist =
         await connection.query("SELECT username, rol FROM usuarios");
+
+    await connection.close();
 
     print(resultslist);
 
@@ -31,12 +33,10 @@ class UserState extends ChangeNotifier {
     final newUsername = username.trim();
     final newPassword = password.trim();
 
-    var connection = PostgreSQLConnection("192.168.0.55", 5433, "pagos",
-        username: "postgres", password: "josue");
-
     try {
       await connection.open();
     } on Exception catch (_) {
+      print("*******ERROR***********");
       return Usuario(
           index: 0,
           username: "sinConexion",
@@ -51,6 +51,8 @@ class UserState extends ChangeNotifier {
           "aPassword": newPassword,
         });
 
+    await connection.close();
+
     print(results);
 
     Usuario findUser = Usuario(
@@ -58,7 +60,6 @@ class UserState extends ChangeNotifier {
         username: "noEncontrado",
         contrasenia: "",
         rol: "noEncontrado");
-    // Usuario(index: 0, username: "Anonymus", contrasenia: "", rol: "lector");
 
     if (results.isNotEmpty) {
       findUser = Usuario(

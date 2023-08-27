@@ -9,6 +9,7 @@ import 'NoDataFoundScreen.dart';
 import 'LoginScreen.dart';
 import 'ChangePasswordScreen.dart';
 import 'globals.dart' as globals;
+import 'dart:io';
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -34,7 +35,8 @@ class _MyHomePageState extends State<MyHomePage> {
       page = TablasPrediales();
     } else if (selectedIndex == exitValue) {
       page = LoginScreen();
-      Navigator.pop(context);
+      exit(0);
+      //Navigator.pop(context);
     } else if (selectedIndex == 4) {
       page = RegisterScreen();
     } else if (selectedIndex == 5) {

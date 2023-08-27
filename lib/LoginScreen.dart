@@ -186,18 +186,21 @@ class LoginScreenState extends State<LoginScreenView> {
                                   {
                                     _changedTextMessageError(
                                         "Usuario o contraseña incorrectos."),
+                                    _changedTextMessageOffline(""),
                                     _changedButtonEnable()
                                   }
                                 else if (value.rol == "sinConexion")
                                   {
                                     _changedTextMessageOffline(
                                         "Servidor no encontrado."),
-                                    _changedButtonEnable(),
-                                    null
+                                    _changedTextMessageError(""),
+                                    _changedButtonEnable()
                                   }
                                 else
                                   {
                                     _changedTextMessageError(""),
+                                    _changedTextMessageOffline(""),
+                                    _changedButtonEnable(),
                                     globals.userLogged = value,
                                     globals.calculateIsEnableField(),
                                     Navigator.push(
