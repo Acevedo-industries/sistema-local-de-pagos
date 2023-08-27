@@ -173,7 +173,8 @@ class LoginScreenState extends State<LoginScreenView> {
                                 else
                                   {
                                     _changedTextMessageError(""),
-                                    globals.UserLogged = value,
+                                    globals.userLogged = value,
+                                    globals.calculateIsEnableField(),
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
@@ -205,6 +206,12 @@ class LoginScreenState extends State<LoginScreenView> {
                   padding: EdgeInsets.fromLTRB(0, 30, 0, 16),
                   child: MaterialButton(
                     onPressed: () {
+                      globals.userLogged = Usuario(
+                          index: 0,
+                          username: "Anonymus",
+                          contrasenia: "",
+                          rol: "Anonymus");
+                      globals.calculateIsEnableField();
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => MyHomePage()),

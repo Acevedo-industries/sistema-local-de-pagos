@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'PagoState.dart';
 import 'Pago.dart';
+import 'globals.dart' as globals;
 
 class HomeScreenMain extends StatelessWidget {
   const HomeScreenMain({super.key});
@@ -215,6 +216,8 @@ class DataCard extends StatelessWidget {
     'nada': Color(0xff6580db),
   };
 
+  bool enablefield = globals.enablefield;
+
   //Color? colorvalue = ;
 
   @override
@@ -305,6 +308,7 @@ class DataCard extends StatelessWidget {
                                     Expanded(
                                       flex: 1,
                                       child: TextField(
+                                        enabled: enablefield,
                                         controller: TextEditingController(),
                                         obscureText: false,
                                         textAlign: TextAlign.start,
@@ -373,6 +377,7 @@ class DataCard extends StatelessWidget {
                                 Expanded(
                                   flex: 1,
                                   child: TextField(
+                                    enabled: enablefield,
                                     controller: TextEditingController(),
                                     obscureText: false,
                                     textAlign: TextAlign.start,
@@ -438,6 +443,7 @@ class DataCard extends StatelessWidget {
                             Expanded(
                               flex: 1,
                               child: TextField(
+                                enabled: enablefield,
                                 controller: TextEditingController(),
                                 obscureText: false,
                                 textAlign: TextAlign.start,
@@ -499,6 +505,7 @@ class DataCard extends StatelessWidget {
                         Expanded(
                           flex: 1,
                           child: TextField(
+                            enabled: enablefield,
                             controller: TextEditingController(),
                             obscureText: false,
                             textAlign: TextAlign.start,
@@ -560,6 +567,7 @@ class DataCard extends StatelessWidget {
                     Expanded(
                       flex: 1,
                       child: TextField(
+                        enabled: enablefield,
                         controller: TextEditingController(),
                         obscureText: false,
                         textAlign: TextAlign.start,
@@ -598,29 +606,30 @@ class DataCard extends StatelessWidget {
                   ],
                 ),
               ),
-              Padding(
-                padding: EdgeInsets.fromLTRB(0, 15, 0, 10),
-                child: MaterialButton(
-                  onPressed: () {},
-                  color: Color(0xffffffff),
-                  elevation: 3,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.0),
-                  ),
-                  padding: EdgeInsets.all(16),
-                  child: Text(
-                    "Actualizar",
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                      fontStyle: FontStyle.normal,
+              if (enablefield)
+                Padding(
+                  padding: EdgeInsets.fromLTRB(0, 15, 0, 10),
+                  child: MaterialButton(
+                    onPressed: () {},
+                    color: Color(0xffffffff),
+                    elevation: 3,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.0),
                     ),
+                    padding: EdgeInsets.all(16),
+                    child: Text(
+                      "Actualizar",
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                        fontStyle: FontStyle.normal,
+                      ),
+                    ),
+                    textColor: Color(0xff000000),
+                    height: 40,
+                    minWidth: 140,
                   ),
-                  textColor: Color(0xff000000),
-                  height: 40,
-                  minWidth: 140,
                 ),
-              ),
             ],
           ),
         ),
