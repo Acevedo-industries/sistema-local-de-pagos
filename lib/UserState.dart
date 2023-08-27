@@ -31,9 +31,18 @@ class UserState extends ChangeNotifier {
     final newUsername = username.trim();
     final newPassword = password.trim();
 
-    var connection = PostgreSQLConnection("192.168.0.57", 5433, "pagos",
+    var connection = PostgreSQLConnection("192.168.0.55", 5433, "pagos",
         username: "postgres", password: "josue");
-    await connection.open();
+
+    try {
+      await connection.open();
+    } on Exception catch (_) {
+      return Usuario(
+          index: 0,
+          username: "sinConexion",
+          contrasenia: "",
+          rol: "sinConexion");
+    }
 
     List<List<dynamic>> results = await connection.query(
         "SELECT username, rol FROM usuarios WHERE username = @aUsername and contrasenia = @aPassword",

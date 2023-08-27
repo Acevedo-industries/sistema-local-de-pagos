@@ -2,6 +2,7 @@ import 'package:app/Usuario.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'components/ErrorMessage.dart';
+import 'components/Offline.dart';
 import 'MyHomePage.dart';
 import 'UserState.dart';
 import 'globals.dart' as globals;
@@ -34,10 +35,24 @@ class LoginScreenState extends State<LoginScreenView> {
   final userController = TextEditingController(text: "superadmin");
   final passwordController = TextEditingController(text: "8ggf7d78d7");
   String textMessageError = '';
+  String offlineMessageError = '';
+  bool buttonEnable = true;
 
   void _changedTextMessageError(String text) {
     setState(() {
       textMessageError = text;
+    });
+  }
+
+  void _changedTextMessageOffline(String text) {
+    setState(() {
+      offlineMessageError = text;
+    });
+  }
+
+  void _changedButtonEnable() {
+    setState(() {
+      buttonEnable = !buttonEnable;
     });
   }
 
@@ -68,7 +83,8 @@ class LoginScreenState extends State<LoginScreenView> {
                     color: Color(0xff000000),
                   ),
                 ),
-                ErrorMessage(textMessageError),
+                if (textMessageError != '') ErrorMessage(textMessageError),
+                if (offlineMessageError != '') Offline(offlineMessageError),
                 Padding(
                   padding: EdgeInsets.fromLTRB(0, 10, 0, 16),
                   child: TextField(
@@ -161,6 +177,7 @@ class LoginScreenState extends State<LoginScreenView> {
                   padding: EdgeInsets.fromLTRB(0, 30, 0, 16),
                   child: MaterialButton(
                     onPressed: () {
+                      _changedButtonEnable();
                       appState
                           .queryByUsernameAndPassword(
                               userController.text, passwordController.text)
@@ -168,7 +185,14 @@ class LoginScreenState extends State<LoginScreenView> {
                                 if (value.rol == "noEncontrado")
                                   {
                                     _changedTextMessageError(
-                                        "Usuario o contraseña incorrectos.")
+                                        "Usuario o contraseña incorrectos."),
+                                    _changedButtonEnable()
+                                  }
+                                else if (value.rol == "sinConexion")
+                                  {
+                                    _changedTextMessageOffline(
+                                        "Servidor no encontrado."),
+                                    _changedButtonEnable()
                                   }
                                 else
                                   {
@@ -183,7 +207,9 @@ class LoginScreenState extends State<LoginScreenView> {
                                   }
                               });
                     },
-                    color: Color(0xffff5630),
+                    color: buttonEnable
+                        ? Color(0xffff5630)
+                        : Color.fromARGB(255, 153, 145, 143),
                     elevation: 3,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12.0),
@@ -193,7 +219,7 @@ class LoginScreenState extends State<LoginScreenView> {
                     height: 40,
                     minWidth: MediaQuery.of(context).size.width,
                     child: Text(
-                      "Entrar",
+                      buttonEnable ? "Entrar" : "Conectando ...",
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
