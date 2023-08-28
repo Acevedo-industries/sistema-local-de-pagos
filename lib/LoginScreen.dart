@@ -50,15 +50,52 @@ class LoginScreenState extends State<LoginScreenView> {
     });
   }
 
-  void _changedButtonEnable() {
+  void _changedButtonEnable(bool value) {
     setState(() {
-      buttonEnable = !buttonEnable;
+      buttonEnable = value;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<UserState>();
+
+    ((value) => {
+          print("value,,,,,,,,,,,,,,,,  $value"),
+          if (value != null)
+            {
+              if (value.rol == "noEncontrado")
+                {
+                  _changedTextMessageError("Usuario o contraseña incorrectos."),
+                  _changedTextMessageOffline(""),
+                  _changedButtonEnable(true)
+                }
+              else if (value.rol == "sinConexion")
+                {
+                  _changedTextMessageOffline("Servidor no encontrado."),
+                  _changedTextMessageError(""),
+                  _changedButtonEnable(true)
+                }
+              else
+                {
+                  _changedTextMessageError(""),
+                  _changedTextMessageOffline(""),
+                  _changedButtonEnable(true),
+                  globals.userLogged = value,
+                  globals.calculateIsEnableField(),
+                  WidgetsBinding.instance!.addPostFrameCallback((_) {
+                    Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (_) => MyHomePage()));
+                  })
+                }
+            }
+          else
+            {
+              _changedTextMessageError(""),
+              _changedTextMessageOffline(""),
+              _changedButtonEnable(true)
+            }
+        })(appState.findUser);
 
     return Scaffold(
       backgroundColor: Color(0xffffffff),
@@ -177,39 +214,12 @@ class LoginScreenState extends State<LoginScreenView> {
                   padding: EdgeInsets.fromLTRB(0, 30, 0, 16),
                   child: MaterialButton(
                     onPressed: () {
-                      _changedButtonEnable();
-                      appState
-                          .queryByUsernameAndPassword(
-                              userController.text, passwordController.text)
-                          .then((value) => {
-                                if (value.rol == "noEncontrado")
-                                  {
-                                    _changedTextMessageError(
-                                        "Usuario o contraseña incorrectos."),
-                                    _changedTextMessageOffline(""),
-                                    _changedButtonEnable()
-                                  }
-                                else if (value.rol == "sinConexion")
-                                  {
-                                    _changedTextMessageOffline(
-                                        "Servidor no encontrado."),
-                                    _changedTextMessageError(""),
-                                    _changedButtonEnable()
-                                  }
-                                else
-                                  {
-                                    _changedTextMessageError(""),
-                                    _changedTextMessageOffline(""),
-                                    _changedButtonEnable(),
-                                    globals.userLogged = value,
-                                    globals.calculateIsEnableField(),
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => MyHomePage()),
-                                    )
-                                  }
-                              });
+                      print("///////////////");
+                      _changedTextMessageError("");
+                      _changedTextMessageOffline("");
+                      _changedButtonEnable(false);
+                      appState.queryByUsernameAndPassword(
+                          userController.text, passwordController.text);
                     },
                     color: buttonEnable
                         ? Color(0xffff5630)

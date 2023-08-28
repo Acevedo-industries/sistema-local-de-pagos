@@ -1,15 +1,21 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 //import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'Pago.dart';
+import 'globals.dart' as globals;
 
 class PagoState extends ChangeNotifier {
   var pagoList = <Pago>[];
   var tequios = <Pago>[];
+  var connectionUri = globals.connectionPostgreSQL;
 
   Future<List<Pago>> getTequios() async {
+    // if (globals.enablefield) return getTequiosPostgreSQL();
+    return getTequiosSql3();
+  }
+
+  Future<List<Pago>> getTequiosSql3() async {
     var db = await openDatabase('pagos.db');
 
     final List<Map<String, dynamic>> pagosquerytequios =
