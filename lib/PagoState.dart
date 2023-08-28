@@ -2,30 +2,70 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:sqflite/sqflite.dart';
 //import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:postgresql2/postgresql.dart';
 import 'Pago.dart';
 import 'globals.dart' as globals;
 
 class PagoState extends ChangeNotifier {
   var pagoList = <Pago>[];
-  var tequios = <Pago>[];
+  var pagoTequios = <Pago>[];
   var connectionUri = globals.connectionPostgreSQL;
 
-  Future<List<Pago>> getTequios() async {
-    // if (globals.enablefield) return getTequiosPostgreSQL();
+  void getTequios() async {
+    if (globals.enablefield) return getTequiosPostgreSQL();
     return getTequiosSql3();
   }
 
-  Future<List<Pago>> getTequiosSql3() async {
-    var db = await openDatabase('pagos.db');
+  void getTequiosPostgreSQL() async {
+    try {
+      return await connect('postgres://postgres:root@192.168.0.57:5433/pagos')
+          .then((conn) {
+        conn
+            .query(
+                "SELECT * FROM pagos WHERE tipo = @aTipo ", {"aTipo": "tequio"})
+            .toList()
+            .then((result) {
+              pagoTequios = List.generate(result.length, (i) {
+                return Pago.fromJson({
+                  'nombre': result[i][2],
+                  'fecha': result[i][0],
+                  'folio': result[i][1],
+                  'cantidad': result[i][3],
+                  'periodo': result[i][4],
+                  'nota': result[i][5],
+                  'tipo': result[i][6],
+                  'index': result[i][1],
+                });
+              });
 
-    final List<Map<String, dynamic>> pagosquerytequios =
+              print(pagoTequios.length);
+              conn.close();
+              notifyListeners();
+            });
+      });
+    } on Exception catch (e) {
+      print(" error ____ $e");
+      notifyListeners();
+    }
+    notifyListeners();
+  }
+
+  void getTequiosSql3() async {
+    var db = await openDatabase('pagos.db');
+    print("from getTequiosSql3");
+    final List<Map<String, dynamic>> tequiosquery =
         await db.query("pagos", where: 'tipo = ?', whereArgs: ["tequio"]);
 
     await db.close();
 
-    return List.generate(pagosquerytequios.length, (i) {
-      return Pago.fromJson(pagosquerytequios[i]);
+    // Convert the List<Map<String, dynamic> into a List<Dog>.
+    pagoTequios = List.generate(tequiosquery.length, (i) {
+      return Pago.fromJson(tequiosquery[i]);
     });
+
+    print("tequios");
+    print(pagoTequios.length);
+    notifyListeners();
   }
 
   Future<List<Pago>> getPrediales() async {

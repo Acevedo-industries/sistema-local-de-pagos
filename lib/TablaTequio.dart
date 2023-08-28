@@ -1,21 +1,46 @@
 import 'package:flutter/material.dart';
 import 'package:pluto_grid/pluto_grid.dart';
+import 'package:provider/provider.dart';
 import 'PagoState.dart';
 import 'Pago.dart';
 
-/// PlutoGrid Example
-//
-/// For more examples, go to the demo web link on the github below.
-class PlutoGridExamplePage extends StatefulWidget {
-  //const PlutoGridExamplePage({Key? key}) : super(key: key);
-
-  PlutoGridExamplePage({super.key});
+class PlutoGridExamplePage extends StatelessWidget {
+  const PlutoGridExamplePage({super.key});
 
   @override
-  State<PlutoGridExamplePage> createState() => _PlutoGridExamplePageState();
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (context) => PagoState(),
+      child: MaterialApp(
+        title: 'Namer App',
+        theme: ThemeData(
+          useMaterial3: true,
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
+        ),
+        home: PlutoGridExampleView(),
+      ),
+    );
+  }
 }
 
-class _PlutoGridExamplePageState extends State<PlutoGridExamplePage> {
+class PlutoGridExampleView extends StatefulWidget {
+  @override
+  PlutoGridState createState() => PlutoGridState();
+}
+
+class PlutoGridState extends State<PlutoGridExampleView> {
+  /// [PlutoGridStateManager] has many methods and properties to dynamically manipulate the grid.
+  /// You can manipulate the grid dynamically at runtime by passing this through the [onLoaded] callback.
+  late final PlutoGridStateManager stateManager;
+
+  late PagoState _pagoState;
+  @override
+  void initState() {
+    super.initState();
+    _pagoState = new PagoState();
+    _pagoState.getTequios();
+  }
+
   final List<PlutoColumn> columns = <PlutoColumn>[
     PlutoColumn(
       title: 'Id',
@@ -73,48 +98,54 @@ class _PlutoGridExamplePageState extends State<PlutoGridExamplePage> {
     ),
   ];
 
-  /// [PlutoGridStateManager] has many methods and properties to dynamically manipulate the grid.
-  /// You can manipulate the grid dynamically at runtime by passing this through the [onLoaded] callback.
-  late final PlutoGridStateManager stateManager;
+  var rowsTable = <PlutoRow>[];
 
-  late PagoState _pagoState;
-  @override
-  void initState() {
-    super.initState();
-    _pagoState = new PagoState();
+  void _changedRows(var myNewrows) {
+    print("=====");
+    setState(() {
+      rowsTable = myNewrows;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: _pagoState.getTequios(),
-        builder: (context, AsyncSnapshot<List<Pago>> tequios) {
-          return PlutoGrid(
-            columns: columns,
-            rows: List.generate(tequios.data!.length, (i) {
-              return PlutoRow(
-                cells: {
-                  'id': PlutoCell(value: tequios.data![i].index),
-                  'folio': PlutoCell(value: tequios.data![i].folio),
-                  'fecha': PlutoCell(value: tequios.data![i].fecha),
-                  'nombre': PlutoCell(value: tequios.data![i].nombre),
-                  'cantidad': PlutoCell(value: tequios.data![i].cantidad),
-                  'periodo': PlutoCell(value: tequios.data![i].periodo),
-                  'nota': PlutoCell(value: tequios.data![i].nota),
-                },
-              );
-              //return Pago.fromJson(pagosquery[i]);
-            }),
-            //columnGroups: columnGroups,
-            onLoaded: (PlutoGridOnLoadedEvent event) {
-              stateManager = event.stateManager;
-              stateManager.setShowColumnFilter(true);
+    var appState = context.watch<PagoState>();
+
+    List<PlutoRow> newrows;
+    ((value) => {
+          print("value ___________________ $value"),
+          newrows = <PlutoRow>[],
+          for (var line in value)
+            {
+              newrows.add(
+                PlutoRow(
+                  cells: {
+                    'id': PlutoCell(value: line.index),
+                    'folio': PlutoCell(value: line.folio),
+                    'fecha': PlutoCell(value: line.fecha),
+                    'nombre': PlutoCell(value: line.nombre),
+                    'cantidad': PlutoCell(value: line.cantidad),
+                    'periodo': PlutoCell(value: line.periodo),
+                    'nota': PlutoCell(value: line.nota),
+                  },
+                ),
+              ),
             },
-            onChanged: (PlutoGridOnChangedEvent event) {
-              print(event);
-            },
-            configuration: const PlutoGridConfiguration(),
-          );
-        });
+          _changedRows(newrows)
+        })(appState.pagoTequios);
+
+    return PlutoGrid(
+      columns: columns,
+      rows: rowsTable,
+      //columnGroups: columnGroups,
+      onLoaded: (PlutoGridOnLoadedEvent event) {
+        stateManager = event.stateManager;
+        stateManager.setShowColumnFilter(true);
+      },
+      onChanged: (PlutoGridOnChangedEvent event) {
+        print(event);
+      },
+      configuration: const PlutoGridConfiguration(),
+    );
   }
 }

@@ -2,8 +2,6 @@ import 'package:app/User.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'package:postgresql2/constants.dart';
-import 'package:postgresql2/pool.dart';
 import 'package:postgresql2/postgresql.dart';
 import 'Usuario.dart';
 import 'globals.dart' as globals;
@@ -13,26 +11,6 @@ class UserState extends ChangeNotifier {
   var connectionUri = globals.connectionPostgreSQL;
 
   Usuario? findUser;
-
-/*   Future<List<Usuario>> getUsuarios() async {
-    await connection.open();
-
-    List<List<dynamic>> resultslist =
-        await connection.query("SELECT username, rol FROM usuarios");
-
-    await connection.close();
-
-    print(resultslist);
-
-    for (final row in resultslist) {
-      usuariosList.add(
-          Usuario(index: 1, username: row[0], contrasenia: "", rol: row[1]));
-    }
-
-    print(usuariosList);
-
-    return usuariosList;
-  } */
 
   void queryByUsernameAndPassword(String username, String password) async {
     final newUsername = username.trim();
