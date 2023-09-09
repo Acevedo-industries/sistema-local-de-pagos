@@ -4,7 +4,13 @@ import 'Usuario.dart';
 
 Usuario? userLogged = Usuario(index: 0, username: "", contrasenia: "", rol: "");
 
-var connectionPostgreSQL = 'postgres://postgres:josue@192.168.0.57:5433/pagos';
+Map<String, dynamic> connectionPostgreSQL = {
+  'host': '192.168.0.57',
+  'port': 5433,
+  'databaseName': 'sistema',
+  'username': 'postgres',
+  'password': 'root'
+};
 
 bool enablefield = false;
 

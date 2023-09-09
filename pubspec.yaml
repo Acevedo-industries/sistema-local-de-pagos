@@ -19,7 +19,7 @@ dependencies:
   sqflite_common_ffi: ^2.3.0+2
   pluto_grid: ^7.0.2
   lottie: ^2.6.0
-  postgresql2: ^1.0.4
+  postgres: ^2.6.2
 
 dev_dependencies:
   flutter_test:
