@@ -24,42 +24,39 @@ class PagoState extends ChangeNotifier {
     return connection;
   }
 
-  void getTequios() async {
+  Future<List<Pago>> getTequios() async {
     if (globals.enablefield) return getTequiosPostgreSQL();
     return getTequiosSql3();
   }
 
-  void getTequiosPostgreSQL() async {
+  Future<List<Pago>> getTequiosPostgreSQL() async {
     var conn = await openConnection();
+    pagoTequios = [];
 
-    conn
+    await conn
         .transaction((c) async {
-          final result = await c.query(
+          final result = await c.mappedResultsQuery(
               "SELECT * FROM pagos WHERE tipo = @aTipo ",
               substitutionValues: {"aTipo": "tequio"});
           return result;
         })
         .then((value) => {
+              //print(""),
               pagoTequios = List.generate(value.length, (i) {
-                return Pago.fromJson({
-                  'nombre': value[i][2],
-                  'fecha': value[i][0],
-                  'folio': value[i][1],
-                  'cantidad': value[i][3],
-                  'periodo': value[i][4],
-                  'nota': value[i][5],
-                  'tipo': value[i][6],
-                  'index': value[i][1],
-                });
-              }),
-              print(pagoTequios.length),
-              notifyListeners()
+                value[i]['pagos']['index'] = i;
+                return Pago.fromJson(value[i]['pagos']);
+              })
             })
-        .onError((error, stackTrace) =>
-            {print(" error ____ $error"), notifyListeners()});
+        .onError((error, stackTrace) => {
+              // print(" error $error , stackTrace  $stackTrace"),
+              pagoTequios = []
+            });
+
+    //print(pagoTequios);
+    return pagoTequios;
   }
 
-  void getTequiosSql3() async {
+  Future<List<Pago>> getTequiosSql3() async {
     var db = await openDatabase('pagos.db');
     print("from getTequiosSql3");
     final List<Map<String, dynamic>> tequiosquery =
@@ -68,13 +65,9 @@ class PagoState extends ChangeNotifier {
     await db.close();
 
     // Convert the List<Map<String, dynamic> into a List<Dog>.
-    pagoTequios = List.generate(tequiosquery.length, (i) {
+    return List.generate(tequiosquery.length, (i) {
       return Pago.fromJson(tequiosquery[i]);
     });
-
-    print("tequios");
-    print(pagoTequios.length);
-    notifyListeners();
   }
 
   Future<List<Pago>> getPrediales() async {
@@ -123,18 +116,18 @@ class PagoState extends ChangeNotifier {
     pagoList.add(Pago(
         index: 1,
         nombre: "Grisel Garcia Ramirez",
-        fecha: "21/05/2023",
+        fecha: DateTime.now(),
         folio: 1901,
-        cantidad: "50",
+        cantidad: 50.0,
         periodo: "2023",
         nota: "",
         tipo: "predial"));
     pagoList.add(Pago(
         index: 2,
         nombre: "Grisel Garcia Ramirez",
-        fecha: "21/05/2023",
+        fecha: DateTime.now(),
         folio: 1902,
-        cantidad: "50",
+        cantidad: 50.0,
         periodo: "2022",
         nota: "",
         tipo: "tequio"));

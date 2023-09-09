@@ -2,9 +2,9 @@ import 'dart:ffi';
 
 class Pago {
   final String? nombre;
-  final String? fecha;
+  final DateTime? fecha;
   final int? folio;
-  final String? cantidad;
+  final double? cantidad;
   final String? periodo;
   final String? nota;
   final String? tipo;

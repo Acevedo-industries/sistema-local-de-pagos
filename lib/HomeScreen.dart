@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'PagoState.dart';
 import 'Pago.dart';
+import 'package:date_format/date_format.dart';
 import 'globals.dart' as globals;
 
 class HomeScreenMain extends StatelessWidget {
@@ -408,7 +409,8 @@ class DataCard extends StatelessWidget {
                                             color: Color(0x80000000), width: 1),
                                       ),
                                       filled: true,
-                                      labelText: pago.fecha ?? '',
+                                      labelText:
+                                          '', //pago.fecha.isNull? '' : formatDate(cast<DateTime>(pago.fecha), [yyyy, '-', mm, '-', dd]),
                                       fillColor: Color(0xfff2f2f3),
                                       isDense: false,
                                       contentPadding: EdgeInsets.symmetric(
@@ -533,7 +535,7 @@ class DataCard extends StatelessWidget {
                                     color: Color(0x80000000), width: 1),
                               ),
                               filled: true,
-                              labelText: pago.cantidad ?? '',
+                              labelText: pago.cantidad.toString(),
                               fillColor: Color(0xfff2f2f3),
                               isDense: false,
                               contentPadding: EdgeInsets.symmetric(
