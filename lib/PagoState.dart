@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:sqflite/sqflite.dart';
 //import 'package:sqflite_common_ffi/sqflite_ffi.dart';
-import 'package:postgresql2/postgresql.dart';
+import 'package:postgres/postgres.dart';
 import 'Pago.dart';
 import 'globals.dart' as globals;
 
@@ -11,43 +11,52 @@ class PagoState extends ChangeNotifier {
   var pagoTequios = <Pago>[];
   var connectionUri = globals.connectionPostgreSQL;
 
+  static Future<PostgreSQLConnection> openConnection() async {
+    Map<String, dynamic> jsonData = globals.connectionPostgreSQL;
+    var connection = PostgreSQLConnection(
+        jsonData['host'], jsonData['port'], jsonData['databaseName'],
+        username: jsonData['username'], password: jsonData['password']);
+    try {
+      await connection.open();
+    } on Exception catch (e) {
+      return connection;
+    }
+    return connection;
+  }
+
   void getTequios() async {
     if (globals.enablefield) return getTequiosPostgreSQL();
     return getTequiosSql3();
   }
 
   void getTequiosPostgreSQL() async {
-    try {
-      return await connect('postgres://postgres:root@192.168.0.57:5433/pagos')
-          .then((conn) {
-        conn
-            .query(
-                "SELECT * FROM pagos WHERE tipo = @aTipo ", {"aTipo": "tequio"})
-            .toList()
-            .then((result) {
-              pagoTequios = List.generate(result.length, (i) {
-                return Pago.fromJson({
-                  'nombre': result[i][2],
-                  'fecha': result[i][0],
-                  'folio': result[i][1],
-                  'cantidad': result[i][3],
-                  'periodo': result[i][4],
-                  'nota': result[i][5],
-                  'tipo': result[i][6],
-                  'index': result[i][1],
-                });
-              });
+    var conn = await openConnection();
 
-              print(pagoTequios.length);
-              conn.close();
-              notifyListeners();
-            });
-      });
-    } on Exception catch (e) {
-      print(" error ____ $e");
-      notifyListeners();
-    }
-    notifyListeners();
+    conn
+        .transaction((c) async {
+          final result = await c.query(
+              "SELECT * FROM pagos WHERE tipo = @aTipo ",
+              substitutionValues: {"aTipo": "tequio"});
+          return result;
+        })
+        .then((value) => {
+              pagoTequios = List.generate(value.length, (i) {
+                return Pago.fromJson({
+                  'nombre': value[i][2],
+                  'fecha': value[i][0],
+                  'folio': value[i][1],
+                  'cantidad': value[i][3],
+                  'periodo': value[i][4],
+                  'nota': value[i][5],
+                  'tipo': value[i][6],
+                  'index': value[i][1],
+                });
+              }),
+              print(pagoTequios.length),
+              notifyListeners()
+            })
+        .onError((error, stackTrace) =>
+            {print(" error ____ $error"), notifyListeners()});
   }
 
   void getTequiosSql3() async {
