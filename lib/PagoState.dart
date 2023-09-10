@@ -10,7 +10,7 @@ import 'dart:io';
 
 class PagoState extends ChangeNotifier {
   var pagoList = <Pago>[];
-  var pagoTequios = <Pago>[];
+
   var connectionUri = globals.connectionPostgreSQL;
 
 // -----------------------------------------------------------------------------
@@ -101,6 +101,7 @@ class PagoState extends ChangeNotifier {
     return connection;
   }
 
+// *****************************************************************************
   Future<List<Pago>> getTequios() async {
     if (globals.enablefield) return getTequiosPostgreSQL();
     return getTequiosSql3();
@@ -108,7 +109,7 @@ class PagoState extends ChangeNotifier {
 
   Future<List<Pago>> getTequiosPostgreSQL() async {
     var conn = await openConnection();
-    pagoTequios = [];
+    var pagoTequios = <Pago>[];
 
     await conn
         .transaction((c) async {
@@ -120,7 +121,6 @@ class PagoState extends ChangeNotifier {
         .then((value) => {
               //print(""),
               pagoTequios = List.generate(value.length, (i) {
-                value[i]['pagos']['index'] = i;
                 return Pago.fromJson(value[i]['pagos']);
               })
             })
@@ -134,44 +134,42 @@ class PagoState extends ChangeNotifier {
   }
 
   Future<List<Pago>> getTequiosSql3() async {
-    var db = await openDatabase('sistema.db');
+    var db = await openDatabase('sistemaTequios.db');
     print("from getTequiosSql3");
-    final List<Map<String, dynamic>> tequiosquery =
-        await db.query("pagos", where: 'tipo = ?', whereArgs: ["tequio"]);
+
+    var pagoTequios = <Pago>[];
+    await db
+        .query("pagos", where: 'tipo = ?', whereArgs: ["tequio"])
+        .then((value) => {
+              print(""),
+              pagoTequios = List.generate(value.length, (i) {
+                DateTime? miFecha;
+                if (value[i]['FECHA'] != null) {
+                  miFecha = DateTime.parse(value[i]['FECHA'].toString());
+                }
+                var mipago = Pago.fromJson({
+                  'NOMBRE': value[i]["NOMBRE"],
+                  'FECHA': miFecha,
+                  'FOLIO': value[i]["FOLIO"],
+                  'CANTIDAD': value[i]["CANTIDAD"],
+                  'PERIODO': value[i]["PERIODO"],
+                  'NOTA': value[i]["NOTA"],
+                  'tipo': value[i]["tipo"]
+                });
+                return mipago;
+              })
+            })
+        .onError((error, stackTrace) => {
+              print(" error $error , stackTrace  $stackTrace"),
+              pagoTequios = []
+            });
 
     await db.close();
 
-    var listaData = <Pago>[];
-
-    try {
-      listaData = List.generate(tequiosquery.length, (i) {
-        print("innner for");
-        print(tequiosquery[i]);
-        //tequiosquery[i]['FECHA'] = DateTime.parse(tequiosquery[i]['FECHA']);
-        //print(DateTime.parse(tequiosquery[i]['FOLIO']).runtimeType);
-        var mipago = Pago.fromJson({
-          'NOMBRE': tequiosquery[i]["NOMBRE"],
-          'FECHA': tequiosquery[i]['FECHA'].isNull
-              ? null
-              : DateTime.parse(tequiosquery[i]['FECHA']),
-          'FOLIO': 1,
-          'CANTIDAD': 5.0,
-          'PERIODO': tequiosquery[i]["PERIODO"],
-          'NOTA': tequiosquery[i]["NOTA"],
-          'tipo': tequiosquery[i]["tipo"],
-          'index': tequiosquery[i]["index"]
-        });
-        print(mipago);
-        return mipago;
-      });
-    } on Exception catch (e) {
-      print(e);
-    }
-
-    print("listaData *** $listaData");
-
-    return listaData;
+    return pagoTequios;
   }
+
+// *****************************************************************************
 
   Future<List<Pago>> getPrediales() async {
     if (globals.enablefield) return getPredialesPostgreSQL();
@@ -180,7 +178,7 @@ class PagoState extends ChangeNotifier {
 
   Future<List<Pago>> getPredialesPostgreSQL() async {
     var conn = await openConnection();
-    pagoTequios = [];
+    var pagoTequios = <Pago>[];
 
     await conn
         .transaction((c) async {
