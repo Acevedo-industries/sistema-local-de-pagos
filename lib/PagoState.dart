@@ -135,7 +135,6 @@ class PagoState extends ChangeNotifier {
 
   Future<List<Pago>> getTequiosSql3() async {
     var db = await openDatabase('sistemaTequios.db');
-    print("from getTequiosSql3");
 
     var pagoTequios = <Pago>[];
     await db
@@ -204,17 +203,41 @@ class PagoState extends ChangeNotifier {
   }
 
   Future<List<Pago>> getPredialesSql3() async {
-    var db = await openDatabase('pagos.db');
+    var db = await openDatabase('sistemaPredial.db');
 
-    final List<Map<String, dynamic>> pagosquerytequios =
-        await db.query("pagos", where: 'tipo = ?', whereArgs: ["predial"]);
+    var pagoPredial = <Pago>[];
+    await db
+        .query("pagos", where: 'tipo = ?', whereArgs: ["predial"])
+        .then((value) => {
+              print(""),
+              pagoPredial = List.generate(value.length, (i) {
+                DateTime? miFecha;
+                if (value[i]['FECHA'] != null) {
+                  miFecha = DateTime.parse(value[i]['FECHA'].toString());
+                }
+                var mipago = Pago.fromJson({
+                  'NOMBRE': value[i]["NOMBRE"],
+                  'FECHA': miFecha,
+                  'FOLIO': value[i]["FOLIO"],
+                  'CANTIDAD': value[i]["CANTIDAD"],
+                  'PERIODO': value[i]["PERIODO"],
+                  'NOTA': value[i]["NOTA"],
+                  'tipo': value[i]["tipo"]
+                });
+                return mipago;
+              })
+            })
+        .onError((error, stackTrace) => {
+              print(" error $error , stackTrace  $stackTrace"),
+              pagoPredial = []
+            });
 
     await db.close();
 
-    return List.generate(pagosquerytequios.length, (i) {
-      return Pago.fromJson(pagosquerytequios[i]);
-    });
+    return pagoPredial;
   }
+
+  // *****************************************************************************
 
   void queryByName(String name) async {
     final newname = name.trim().replaceAll(RegExp(r' '), '%');
