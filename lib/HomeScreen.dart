@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'PagoState.dart';
 import 'Pago.dart';
@@ -219,7 +220,14 @@ class DataCard extends StatelessWidget {
 
   bool enablefield = globals.enablefield;
 
-  //Color? colorvalue = ;
+  String fechaString(DateTime? value) {
+    print("value,,,,,,,,,,,,,,,,  $value");
+    if (value != null) {
+      return formatDate(value, [yyyy, '-', mm, '-', dd]);
+    } else {
+      return "";
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -378,6 +386,11 @@ class DataCard extends StatelessWidget {
                                 Expanded(
                                   flex: 1,
                                   child: TextField(
+                                    keyboardType: TextInputType.number,
+                                    inputFormatters: <TextInputFormatter>[
+                                      FilteringTextInputFormatter.allow(
+                                          RegExp(r"[0-9-]"))
+                                    ],
                                     enabled: enablefield,
                                     controller: TextEditingController(),
                                     obscureText: false,
@@ -409,8 +422,7 @@ class DataCard extends StatelessWidget {
                                             color: Color(0x80000000), width: 1),
                                       ),
                                       filled: true,
-                                      labelText:
-                                          '', //pago.fecha.isNull? '' : formatDate(cast<DateTime>(pago.fecha), [yyyy, '-', mm, '-', dd]),
+                                      labelText: fechaString(pago.fecha),
                                       fillColor: Color(0xfff2f2f3),
                                       isDense: false,
                                       contentPadding: EdgeInsets.symmetric(
@@ -445,6 +457,10 @@ class DataCard extends StatelessWidget {
                             Expanded(
                               flex: 1,
                               child: TextField(
+                                keyboardType: TextInputType.number,
+                                inputFormatters: <TextInputFormatter>[
+                                  FilteringTextInputFormatter.digitsOnly
+                                ],
                                 enabled: enablefield,
                                 controller: TextEditingController(),
                                 obscureText: false,
@@ -507,6 +523,11 @@ class DataCard extends StatelessWidget {
                         Expanded(
                           flex: 1,
                           child: TextField(
+                            keyboardType: TextInputType.number,
+                            inputFormatters: <TextInputFormatter>[
+                              FilteringTextInputFormatter.allow(
+                                  RegExp(r"[0-9.]"))
+                            ],
                             enabled: enablefield,
                             controller: TextEditingController(),
                             obscureText: false,
@@ -569,6 +590,10 @@ class DataCard extends StatelessWidget {
                     Expanded(
                       flex: 1,
                       child: TextField(
+                        keyboardType: TextInputType.number,
+                        inputFormatters: <TextInputFormatter>[
+                          FilteringTextInputFormatter.allow(RegExp(r"[0-9-]"))
+                        ],
                         enabled: enablefield,
                         controller: TextEditingController(),
                         obscureText: false,
