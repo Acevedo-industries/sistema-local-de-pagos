@@ -1,3 +1,4 @@
+import 'package:app/components/ErrorMessage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -167,6 +168,9 @@ class HomeScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12.0),
                   ),
                   padding: EdgeInsets.all(16),
+                  textColor: Color(0xffffffff),
+                  height: 40,
+                  minWidth: 140,
                   child: Text(
                     "Buscar",
                     style: TextStyle(
@@ -175,9 +179,6 @@ class HomeScreen extends StatelessWidget {
                       fontStyle: FontStyle.normal,
                     ),
                   ),
-                  textColor: Color(0xffffffff),
-                  height: 40,
-                  minWidth: 140,
                 ),
               ),
             ),
@@ -199,7 +200,9 @@ class HomeScreen extends StatelessWidget {
                         children: [
                           Align(alignment: Alignment.center),
                           for (var pago in appState.pagoList)
-                            DataCard(pago: pago)
+                            pago.tipo != null
+                                ? DataCard(pago: pago)
+                                : ErrorMessage(pago.nombre.toString())
                         ],
                       ),
                     ],

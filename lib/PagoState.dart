@@ -244,8 +244,20 @@ class PagoState extends ChangeNotifier {
                 return mipago;
               })
             })
-        .onError((error, stackTrace) =>
-            {print(" error $error , stackTrace  $stackTrace"), pagoList = []});
+        .onError((error, stackTrace) => {
+              print(" error $error , stackTrace  $stackTrace"),
+              pagoList = [
+                Pago(
+                    nombre:
+                        "No existe el archivo $dataBaseSql3Name\n Por favor primero descarge una copia de los datos",
+                    fecha: null,
+                    folio: null,
+                    cantidad: null,
+                    periodo: null,
+                    nota: null,
+                    tipo: null)
+              ]
+            });
 
     notifyListeners();
   }
