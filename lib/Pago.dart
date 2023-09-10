@@ -1,5 +1,7 @@
 import 'dart:ffi';
 
+import 'package:date_format/date_format.dart';
+
 class Pago {
   final String? nombre;
   final DateTime? fecha;
@@ -8,7 +10,6 @@ class Pago {
   final String? periodo;
   final String? nota;
   final String? tipo;
-  final int index;
 
   Pago(
       {this.nombre,
@@ -17,8 +18,16 @@ class Pago {
       this.cantidad,
       this.periodo,
       this.nota,
-      this.tipo,
-      required this.index});
+      this.tipo});
+
+  String? fechaString() {
+    if (fecha != null) {
+      return formatDate(
+          fecha!, [yyyy, '-', mm, '-', dd, ' ', HH, ':', nn, ':', ss]);
+    } else {
+      return null;
+    }
+  }
 
   Pago.fromJson(Map<String, dynamic> json)
       : nombre = json['NOMBRE'],
@@ -27,8 +36,7 @@ class Pago {
         cantidad = json['CANTIDAD'],
         periodo = json['PERIODO'],
         nota = json['NOTA'],
-        tipo = json['tipo'],
-        index = json['index'];
+        tipo = json['tipo'];
 
   Map<String, dynamic> toJson() => {
         'nombre': nombre,
@@ -37,12 +45,21 @@ class Pago {
         'cantidad': cantidad,
         'periodo': periodo,
         'nota': nota,
-        'tipo': tipo,
-        'index': index
+        'tipo': tipo
+      };
+
+  Map<String, dynamic> toJsonSqlite3() => {
+        'nombre': nombre,
+        'fecha': fechaString(),
+        'folio': folio,
+        'cantidad': cantidad,
+        'periodo': periodo,
+        'nota': nota,
+        'tipo': tipo
       };
 
   @override
   String toString() {
-    return 'Pago{index: $index, nombre: $nombre, fecha: $fecha, folio: $folio, cantidad: $cantidad, periodo: $periodo, nota: $nota, tipo: $tipo }';
+    return 'Pago{ nombre: $nombre, fecha: $fecha, folio: $folio, cantidad: $cantidad, periodo: $periodo, nota: $nota, tipo: $tipo }';
   }
 }

@@ -1,15 +1,71 @@
 import 'package:flutter/material.dart';
+import 'package:path/path.dart';
 import 'dart:async';
 import 'package:sqflite/sqflite.dart';
 //import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:postgres/postgres.dart';
 import 'Pago.dart';
 import 'globals.dart' as globals;
+import 'dart:io';
 
 class PagoState extends ChangeNotifier {
   var pagoList = <Pago>[];
   var pagoTequios = <Pago>[];
   var connectionUri = globals.connectionPostgreSQL;
+
+// -----------------------------------------------------------------------------
+  Future<String> getPathDBTequios() async {
+    String path = await getDatabasesPath();
+    var pathFile = join(path, 'sistemaTequios.db');
+    return pathFile;
+  }
+
+  Future<Database> initializeDB(String pathFile) async {
+    return openDatabase(
+      pathFile,
+      onCreate: (database, version) async {
+        await database.execute(
+          "CREATE TABLE pagos(FECHA TIMESTAMP, FOLIO INTEGER, NOMBRE TEXT, CANTIDAD REAL, PERIODO TEXT, NOTA TEXT, tipo TEXT)",
+        );
+      },
+      version: 1,
+    );
+  }
+
+  void deleteFile(String pathFile) {
+    try {
+      var filedatabase = File(pathFile);
+      filedatabase.delete();
+    } on Exception catch (e) {}
+  }
+
+  Future<bool> createBackup(String pathFile, var pagoTequiosList) async {
+    deleteFile(pathFile);
+    try {
+      final Database db = await initializeDB(pathFile);
+
+      for (var element in pagoTequiosList) {
+        await db.insert('pagos', element.toJsonSqlite3(),
+            conflictAlgorithm: ConflictAlgorithm.replace);
+      }
+    } on Exception catch (e) {
+      print(e);
+      return false;
+    }
+
+    return true;
+  }
+
+// -----------------------------------------------------------------------------+
+
+  Future<bool> createBackupTequio() async {
+    var pathFile = await getPathDBTequios();
+    print(pathFile);
+    var pagoTequiosList = await getTequiosPostgreSQL();
+    return createBackup(pathFile, pagoTequiosList);
+  }
+
+// -----------------------------------------------------------------------------+
 
   static Future<PostgreSQLConnection> openConnection() async {
     Map<String, dynamic> jsonData = globals.connectionPostgreSQL;
@@ -190,7 +246,6 @@ class PagoState extends ChangeNotifier {
   void addPago() {
     //favorites.remove(current);
     pagoList.add(Pago(
-        index: 1,
         nombre: "Grisel Garcia Ramirez",
         fecha: DateTime.now(),
         folio: 1901,
@@ -199,7 +254,6 @@ class PagoState extends ChangeNotifier {
         nota: "",
         tipo: "predial"));
     pagoList.add(Pago(
-        index: 2,
         nombre: "Grisel Garcia Ramirez",
         fecha: DateTime.now(),
         folio: 1902,

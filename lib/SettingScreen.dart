@@ -1,8 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'PagoState.dart';
 
 class SettingScreen extends StatelessWidget {
+  const SettingScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (context) => PagoState(),
+      child: MaterialApp(
+        title: 'Namer App',
+        theme: ThemeData(
+          useMaterial3: true,
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
+        ),
+        home: _SettingScreen(),
+      ),
+    );
+  }
+}
+
+class _SettingScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    var appState = context.watch<PagoState>();
+
     return Scaffold(
       backgroundColor: Color(0xffffffff),
       appBar: AppBar(
@@ -45,7 +69,9 @@ class SettingScreen extends StatelessWidget {
                   Expanded(
                     flex: 1,
                     child: MaterialButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        appState.createBackupTequio();
+                      },
                       color: Color(0xffffffff),
                       elevation: 0,
                       shape: RoundedRectangleBorder(
@@ -54,6 +80,9 @@ class SettingScreen extends StatelessWidget {
                       ),
                       padding:
                           EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      textColor: Color(0xff000000),
+                      height: 40,
+                      minWidth: 140,
                       child: Text(
                         "Descargar datos",
                         style: TextStyle(
@@ -62,9 +91,6 @@ class SettingScreen extends StatelessWidget {
                           fontStyle: FontStyle.normal,
                         ),
                       ),
-                      textColor: Color(0xff000000),
-                      height: 40,
-                      minWidth: 140,
                     ),
                   ),
                 ],

@@ -40,7 +40,6 @@ class _PlutoGridExamplePageState extends State<PlutoGridExamplePage> {
               rows: List.generate(tequios.data!.length, (i) {
                 return PlutoRow(
                   cells: {
-                    'id': PlutoCell(value: tequios.data![i].index),
                     'folio': PlutoCell(value: tequios.data![i].folio),
                     'fecha': PlutoCell(value: tequios.data![i].fecha),
                     'nombre': PlutoCell(value: tequios.data![i].nombre),
