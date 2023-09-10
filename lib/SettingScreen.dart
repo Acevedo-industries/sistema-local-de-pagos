@@ -70,7 +70,7 @@ class _SettingScreen extends StatelessWidget {
                     flex: 1,
                     child: MaterialButton(
                       onPressed: () {
-                        appState.createBackupTequio();
+                        appState.createBackupTequioAndPredial();
                       },
                       color: Color(0xffffffff),
                       elevation: 0,

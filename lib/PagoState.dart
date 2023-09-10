@@ -20,6 +20,12 @@ class PagoState extends ChangeNotifier {
     return pathFile;
   }
 
+  Future<String> getPathDBPredial() async {
+    String path = await getDatabasesPath();
+    var pathFile = join(path, 'sistemaPredial.db');
+    return pathFile;
+  }
+
   Future<Database> initializeDB(String pathFile) async {
     return openDatabase(
       pathFile,
@@ -63,6 +69,21 @@ class PagoState extends ChangeNotifier {
     print(pathFile);
     var pagoTequiosList = await getTequiosPostgreSQL();
     return createBackup(pathFile, pagoTequiosList);
+  }
+
+  Future<bool> createBackupPredial() async {
+    var pathFile = await getPathDBPredial();
+    print(pathFile);
+    var pagoPredialesList = await getPredialesPostgreSQL();
+    return createBackup(pathFile, pagoPredialesList);
+  }
+
+// -----------------------------------------------------------------------------+
+
+  Future<bool> createBackupTequioAndPredial() async {
+    var backupTequio = await createBackupTequio();
+    var backupPredial = await createBackupPredial();
+    return (backupTequio && backupPredial);
   }
 
 // -----------------------------------------------------------------------------+
