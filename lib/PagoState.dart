@@ -57,20 +57,78 @@ class PagoState extends ChangeNotifier {
   }
 
   Future<List<Pago>> getTequiosSql3() async {
-    var db = await openDatabase('pagos.db');
+    var db = await openDatabase('sistema.db');
     print("from getTequiosSql3");
     final List<Map<String, dynamic>> tequiosquery =
         await db.query("pagos", where: 'tipo = ?', whereArgs: ["tequio"]);
 
     await db.close();
 
-    // Convert the List<Map<String, dynamic> into a List<Dog>.
-    return List.generate(tequiosquery.length, (i) {
-      return Pago.fromJson(tequiosquery[i]);
-    });
+    var listaData = <Pago>[];
+
+    try {
+      listaData = List.generate(tequiosquery.length, (i) {
+        print("innner for");
+        print(tequiosquery[i]);
+        //tequiosquery[i]['FECHA'] = DateTime.parse(tequiosquery[i]['FECHA']);
+        //print(DateTime.parse(tequiosquery[i]['FOLIO']).runtimeType);
+        var mipago = Pago.fromJson({
+          'NOMBRE': tequiosquery[i]["NOMBRE"],
+          'FECHA': tequiosquery[i]['FECHA'].isNull
+              ? null
+              : DateTime.parse(tequiosquery[i]['FECHA']),
+          'FOLIO': 1,
+          'CANTIDAD': 5.0,
+          'PERIODO': tequiosquery[i]["PERIODO"],
+          'NOTA': tequiosquery[i]["NOTA"],
+          'tipo': tequiosquery[i]["tipo"],
+          'index': tequiosquery[i]["index"]
+        });
+        print(mipago);
+        return mipago;
+      });
+    } on Exception catch (e) {
+      print(e);
+    }
+
+    print("listaData *** $listaData");
+
+    return listaData;
   }
 
   Future<List<Pago>> getPrediales() async {
+    if (globals.enablefield) return getPredialesPostgreSQL();
+    return getPredialesSql3();
+  }
+
+  Future<List<Pago>> getPredialesPostgreSQL() async {
+    var conn = await openConnection();
+    pagoTequios = [];
+
+    await conn
+        .transaction((c) async {
+          final result = await c.mappedResultsQuery(
+              "SELECT * FROM pagos WHERE tipo = @aTipo ",
+              substitutionValues: {"aTipo": "predial"});
+          return result;
+        })
+        .then((value) => {
+              //print(""),
+              pagoTequios = List.generate(value.length, (i) {
+                value[i]['pagos']['index'] = i;
+                return Pago.fromJson(value[i]['pagos']);
+              })
+            })
+        .onError((error, stackTrace) => {
+              // print(" error $error , stackTrace  $stackTrace"),
+              pagoTequios = []
+            });
+
+    //print(pagoTequios);
+    return pagoTequios;
+  }
+
+  Future<List<Pago>> getPredialesSql3() async {
     var db = await openDatabase('pagos.db');
 
     final List<Map<String, dynamic>> pagosquerytequios =
