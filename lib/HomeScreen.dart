@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'PagoState.dart';
 import 'Pago.dart';
 import 'package:date_format/date_format.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'globals.dart' as globals;
 
 class HomeScreenMain extends StatelessWidget {
@@ -15,6 +16,15 @@ class HomeScreenMain extends StatelessWidget {
       create: (context) => PagoState(),
       child: MaterialApp(
         title: 'Namer App',
+        localizationsDelegates: [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: [
+          Locale('mex', ''), //code
+          Locale('es', ''),
+        ],
         theme: ThemeData(
           useMaterial3: true,
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
@@ -211,6 +221,7 @@ class DataCard extends StatelessWidget {
   });
 
   final Pago pago;
+  final dateController = TextEditingController();
 
   Map<String, Color> datacolor = {
     'predial': Color(0xffaddb65),
@@ -231,6 +242,7 @@ class DataCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    dateController.text = fechaString(pago.fecha);
     return Card(
       margin: EdgeInsets.all(4),
       color: datacolor[pago.tipo ?? 'nada'],
@@ -384,52 +396,50 @@ class DataCard extends StatelessWidget {
                                   ),
                                 ),
                                 Expanded(
-                                  flex: 1,
-                                  child: TextField(
-                                    keyboardType: TextInputType.number,
-                                    inputFormatters: <TextInputFormatter>[
-                                      FilteringTextInputFormatter.allow(
-                                          RegExp(r"[0-9-]"))
-                                    ],
-                                    enabled: enablefield,
-                                    controller: TextEditingController(),
-                                    obscureText: false,
-                                    textAlign: TextAlign.start,
-                                    maxLines: 1,
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w400,
-                                      fontStyle: FontStyle.normal,
-                                      fontSize: 14,
-                                      color: Color(0xff000000),
-                                    ),
-                                    decoration: InputDecoration(
-                                      disabledBorder: OutlineInputBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(12.0),
-                                        borderSide: BorderSide(
-                                            color: Color(0x80000000), width: 1),
+                                    flex: 1,
+                                    child: TextField(
+                                      readOnly: true,
+                                      controller: dateController,
+                                      decoration: const InputDecoration(
+                                        disabledBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Color(0x80000000),
+                                              width: 1),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Color(0x80000000),
+                                              width: 1),
+                                        ),
+                                        enabledBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Color(0x80000000),
+                                              width: 1),
+                                        ),
+                                        filled: true,
+                                        hintText: "",
+                                        fillColor: Color(0xfff2f2f3),
+                                        isDense: false,
+                                        contentPadding: EdgeInsets.symmetric(
+                                            vertical: 8, horizontal: 12),
                                       ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(12.0),
-                                        borderSide: BorderSide(
-                                            color: Color(0x80000000), width: 1),
-                                      ),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(12.0),
-                                        borderSide: BorderSide(
-                                            color: Color(0x80000000), width: 1),
-                                      ),
-                                      filled: true,
-                                      labelText: fechaString(pago.fecha),
-                                      fillColor: Color(0xfff2f2f3),
-                                      isDense: false,
-                                      contentPadding: EdgeInsets.symmetric(
-                                          vertical: 8, horizontal: 12),
-                                    ),
-                                  ),
-                                ),
+                                      onTap: () async {
+                                        var date = await showDatePicker(
+                                            locale: const Locale("es", "MEX"),
+                                            context: context,
+                                            initialDate:
+                                                pago.fecha ?? DateTime.now(),
+                                            firstDate: DateTime(1900),
+                                            lastDate: DateTime(2100));
+                                        if (date != null) {
+                                          dateController.text = formatDate(
+                                              date, [yyyy, '-', mm, '-', dd]);
+                                        } else {
+                                          dateController.text =
+                                              fechaString(pago.fecha);
+                                        }
+                                      },
+                                    )),
                               ],
                             ),
                           ),
