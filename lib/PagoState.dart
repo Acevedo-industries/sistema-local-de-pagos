@@ -105,12 +105,7 @@ class PagoState extends ChangeNotifier {
     return pagoData;
   }
 
-  Future<List<Pago>> getTequios() async {
-    if (globals.enablefield) return getTequiosPostgreSQL();
-    return getTequiosSql3();
-  }
-
-  Future<List<Pago>> getTequiosPostgreSQL() async {
+  Future<List<Pago>> getTablePostgreSQL(String tipoPago) async {
     var conn = await openConnection();
     var pagoTequios = <Pago>[];
 
@@ -118,7 +113,7 @@ class PagoState extends ChangeNotifier {
         .transaction((c) async {
           final result = await c.mappedResultsQuery(
               "SELECT * FROM pagos WHERE tipo = @aTipo ",
-              substitutionValues: {"aTipo": "tequio"});
+              substitutionValues: {"aTipo": tipoPago});
           return result;
         })
         .then((value) => {
@@ -136,81 +131,12 @@ class PagoState extends ChangeNotifier {
     return pagoTequios;
   }
 
-  Future<List<Pago>> getTequiosSql3() async {
-    var db = await openDatabase(dataBaseSql3Name);
-
-    var pagoTequios = <Pago>[];
-    await db
-        .query("pagos", where: 'tipo = ?', whereArgs: ["tequio"])
-        .then((value) => {
-              print(""),
-              pagoTequios = List.generate(value.length, (i) {
-                DateTime? miFecha;
-                if (value[i]['FECHA'] != null) {
-                  miFecha = DateTime.parse(value[i]['FECHA'].toString());
-                }
-                var mipago = Pago.fromJson({
-                  'NOMBRE': value[i]["NOMBRE"],
-                  'FECHA': miFecha,
-                  'FOLIO': value[i]["FOLIO"],
-                  'CANTIDAD': value[i]["CANTIDAD"],
-                  'PERIODO': value[i]["PERIODO"],
-                  'NOTA': value[i]["NOTA"],
-                  'tipo': value[i]["tipo"]
-                });
-                return mipago;
-              })
-            })
-        .onError((error, stackTrace) => {
-              print(" error $error , stackTrace  $stackTrace"),
-              pagoTequios = []
-            });
-
-    await db.close();
-
-    return pagoTequios;
-  }
-
-// *****************************************************************************
-
-  Future<List<Pago>> getPrediales() async {
-    if (globals.enablefield) return getPredialesPostgreSQL();
-    return getPredialesSql3();
-  }
-
-  Future<List<Pago>> getPredialesPostgreSQL() async {
-    var conn = await openConnection();
-    var pagoTequios = <Pago>[];
-
-    await conn
-        .transaction((c) async {
-          final result = await c.mappedResultsQuery(
-              "SELECT * FROM pagos WHERE tipo = @aTipo ",
-              substitutionValues: {"aTipo": "predial"});
-          return result;
-        })
-        .then((value) => {
-              //print(""),
-              pagoTequios = List.generate(value.length, (i) {
-                value[i]['pagos']['index'] = i;
-                return Pago.fromJson(value[i]['pagos']);
-              })
-            })
-        .onError((error, stackTrace) => {
-              // print(" error $error , stackTrace  $stackTrace"),
-              pagoTequios = []
-            });
-
-    //print(pagoTequios);
-    return pagoTequios;
-  }
-
-  Future<List<Pago>> getPredialesSql3() async {
+  Future<List<Pago>> getTableSql3(String tipoPago) async {
     var db = await openDatabase(dataBaseSql3Name);
 
     var pagoPredial = <Pago>[];
     await db
-        .query("pagos", where: 'tipo = ?', whereArgs: ["predial"])
+        .query("pagos", where: 'tipo = ?', whereArgs: [tipoPago])
         .then((value) => {
               print(""),
               pagoPredial = List.generate(value.length, (i) {
@@ -232,12 +158,34 @@ class PagoState extends ChangeNotifier {
             })
         .onError((error, stackTrace) => {
               print(" error $error , stackTrace  $stackTrace"),
-              pagoPredial = []
+              pagoPredial = [
+                Pago(
+                    nombre:
+                        "No existe el archivo $dataBaseSql3Name\n Por favor primero descarge una copia de los datos",
+                    fecha: null,
+                    folio: null,
+                    cantidad: null,
+                    periodo: null,
+                    nota: null,
+                    tipo: null)
+              ]
             });
 
     await db.close();
 
     return pagoPredial;
+  }
+
+// *****************************************************************************
+
+  Future<List<Pago>> getTequios() async {
+    if (globals.enablefield) return getTablePostgreSQL("tequio");
+    return getTableSql3("tequio");
+  }
+
+  Future<List<Pago>> getPrediales() async {
+    if (globals.enablefield) return getTablePostgreSQL("predial");
+    return getTableSql3("predial");
   }
 
   // *****************************************************************************
@@ -261,7 +209,6 @@ class PagoState extends ChangeNotifier {
         .then((value) => {
               print(""),
               pagoList = List.generate(value.length, (i) {
-                value[i]['pagos']['index'] = i;
                 return Pago.fromJson(value[i]['pagos']);
               })
             })
