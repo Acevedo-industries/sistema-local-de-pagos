@@ -10,6 +10,7 @@ import 'dart:io';
 
 class PagoState extends ChangeNotifier {
   var pagoList = <Pago>[];
+  bool? stateBackup;
   final dataBaseSql3Name = 'sistemaData.db';
   var connectionUri = globals.connectionPostgreSQL;
 
@@ -58,11 +59,15 @@ class PagoState extends ChangeNotifier {
 
 // -----------------------------------------------------------------------------+
 
-  Future<bool> createBackupData() async {
+  void createBackupData() async {
+    stateBackup = null;
     var pathFile = await getPathDB();
     print(pathFile);
-    var pagoTequiosList = await getDataPostgreSQL();
-    return createBackup(pathFile, pagoTequiosList);
+    var pagoList = await getDataPostgreSQL();
+
+    var result = await createBackup(pathFile, pagoList);
+    stateBackup = result;
+    notifyListeners();
   }
 // -----------------------------------------------------------------------------+
 

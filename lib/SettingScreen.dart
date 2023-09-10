@@ -1,7 +1,10 @@
+import 'package:app/components/LoadMessage.dart';
+import 'package:app/components/SuccessMessage.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import 'PagoState.dart';
+import 'components/ErrorMessage.dart';
+import 'components/Offline.dart';
 
 class SettingScreen extends StatelessWidget {
   const SettingScreen({super.key});
@@ -16,16 +19,33 @@ class SettingScreen extends StatelessWidget {
           useMaterial3: true,
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
         ),
-        home: _SettingScreen(),
+        home: SettingScreenView(),
       ),
     );
   }
 }
 
-class _SettingScreen extends StatelessWidget {
+class SettingScreenView extends StatefulWidget {
+  @override
+  SettingScreenState createState() => SettingScreenState();
+}
+
+class SettingScreenState extends State<SettingScreenView> {
+  bool buttonEnable = true;
+
+  void _changedButtonEnable(bool value) {
+    setState(() {
+      buttonEnable = value;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<PagoState>();
+
+    ((value) => {
+          if (value != null) {_changedButtonEnable(true)}
+        })(appState.stateBackup);
 
     return Scaffold(
       backgroundColor: Color(0xffffffff),
@@ -38,7 +58,7 @@ class _SettingScreen extends StatelessWidget {
           borderRadius: BorderRadius.zero,
         ),
         title: Text(
-          "Setting",
+          "Configuracion",
           style: TextStyle(
             fontWeight: FontWeight.w700,
             fontStyle: FontStyle.normal,
@@ -67,35 +87,42 @@ class _SettingScreen extends StatelessWidget {
                 mainAxisSize: MainAxisSize.max,
                 children: [
                   Expanded(
-                    flex: 1,
-                    child: MaterialButton(
-                      onPressed: () {
-                        appState.createBackupData();
-                      },
-                      color: Color(0xffffffff),
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.zero,
-                        side: BorderSide(color: Color(0xff808080), width: 1),
-                      ),
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      textColor: Color(0xff000000),
-                      height: 40,
-                      minWidth: 140,
-                      child: Text(
-                        "Descargar datos",
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                          fontStyle: FontStyle.normal,
+                      flex: 1,
+                      child: MaterialButton(
+                        onPressed: () {
+                          _changedButtonEnable(false);
+                          appState.createBackupData();
+                        },
+                        color: Color(0xffffffff),
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.zero,
+                          side: BorderSide(color: Color(0xff808080), width: 1),
                         ),
-                      ),
-                    ),
-                  ),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        textColor: Color(0xff000000),
+                        height: 40,
+                        minWidth: 140,
+                        child: Text(
+                          buttonEnable ? "Descargar datos" : "Descargando ... ",
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                            fontStyle: FontStyle.normal,
+                          ),
+                        ),
+                      )),
                 ],
               ),
             ),
+            if (buttonEnable == false && appState.stateBackup == null)
+              LoadMessage("Descargando una copia de los datos ..."),
+            if (appState.stateBackup != null && appState.stateBackup == true)
+              SuccessMessage("Descarga de datos realizada con exito."),
+            if (appState.stateBackup != null && appState.stateBackup == false)
+              ErrorMessage(
+                  "Ocurrio un error al hacer la descarga, intentelo nuevamente."),
           ],
         ),
       ),
