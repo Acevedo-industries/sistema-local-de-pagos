@@ -10,19 +10,13 @@ import 'dart:io';
 
 class PagoState extends ChangeNotifier {
   var pagoList = <Pago>[];
-
+  final dataBaseSql3Name = 'sistemaData.db';
   var connectionUri = globals.connectionPostgreSQL;
 
 // -----------------------------------------------------------------------------
-  Future<String> getPathDBTequios() async {
+  Future<String> getPathDB() async {
     String path = await getDatabasesPath();
-    var pathFile = join(path, 'sistemaTequios.db');
-    return pathFile;
-  }
-
-  Future<String> getPathDBPredial() async {
-    String path = await getDatabasesPath();
-    var pathFile = join(path, 'sistemaPredial.db');
+    var pathFile = join(path, dataBaseSql3Name);
     return pathFile;
   }
 
@@ -64,28 +58,12 @@ class PagoState extends ChangeNotifier {
 
 // -----------------------------------------------------------------------------+
 
-  Future<bool> createBackupTequio() async {
-    var pathFile = await getPathDBTequios();
+  Future<bool> createBackupData() async {
+    var pathFile = await getPathDB();
     print(pathFile);
-    var pagoTequiosList = await getTequiosPostgreSQL();
+    var pagoTequiosList = await getDataPostgreSQL();
     return createBackup(pathFile, pagoTequiosList);
   }
-
-  Future<bool> createBackupPredial() async {
-    var pathFile = await getPathDBPredial();
-    print(pathFile);
-    var pagoPredialesList = await getPredialesPostgreSQL();
-    return createBackup(pathFile, pagoPredialesList);
-  }
-
-// -----------------------------------------------------------------------------+
-
-  Future<bool> createBackupTequioAndPredial() async {
-    var backupTequio = await createBackupTequio();
-    var backupPredial = await createBackupPredial();
-    return (backupTequio && backupPredial);
-  }
-
 // -----------------------------------------------------------------------------+
 
   static Future<PostgreSQLConnection> openConnection() async {
@@ -102,6 +80,31 @@ class PagoState extends ChangeNotifier {
   }
 
 // *****************************************************************************
+
+  Future<List<Pago>> getDataPostgreSQL() async {
+    var conn = await openConnection();
+    var pagoData = <Pago>[];
+
+    await conn
+        .transaction((c) async {
+          final result = await c.mappedResultsQuery("SELECT * FROM pagos");
+          return result;
+        })
+        .then((value) => {
+              //print(""),
+              pagoData = List.generate(value.length, (i) {
+                return Pago.fromJson(value[i]['pagos']);
+              })
+            })
+        .onError((error, stackTrace) => {
+              // print(" error $error , stackTrace  $stackTrace"),
+              pagoData = []
+            });
+
+    //print(pagoData);
+    return pagoData;
+  }
+
   Future<List<Pago>> getTequios() async {
     if (globals.enablefield) return getTequiosPostgreSQL();
     return getTequiosSql3();
@@ -134,7 +137,7 @@ class PagoState extends ChangeNotifier {
   }
 
   Future<List<Pago>> getTequiosSql3() async {
-    var db = await openDatabase('sistemaTequios.db');
+    var db = await openDatabase(dataBaseSql3Name);
 
     var pagoTequios = <Pago>[];
     await db
@@ -203,7 +206,7 @@ class PagoState extends ChangeNotifier {
   }
 
   Future<List<Pago>> getPredialesSql3() async {
-    var db = await openDatabase('sistemaPredial.db');
+    var db = await openDatabase(dataBaseSql3Name);
 
     var pagoPredial = <Pago>[];
     await db
@@ -271,17 +274,32 @@ class PagoState extends ChangeNotifier {
   }
 
   void queryByNameSql3(String name) async {
-    print("&&&&& jajaja");
-    var db = await openDatabase('pagos.db');
+    var db = await openDatabase(dataBaseSql3Name);
+    pagoList = <Pago>[];
+    await db
+        .query("pagos", where: 'nombre LIKE ?', whereArgs: [("%$name%")])
+        .then((value) => {
+              print(""),
+              pagoList = List.generate(value.length, (i) {
+                DateTime? miFecha;
+                if (value[i]['FECHA'] != null) {
+                  miFecha = DateTime.parse(value[i]['FECHA'].toString());
+                }
+                var mipago = Pago.fromJson({
+                  'NOMBRE': value[i]["NOMBRE"],
+                  'FECHA': miFecha,
+                  'FOLIO': value[i]["FOLIO"],
+                  'CANTIDAD': value[i]["CANTIDAD"],
+                  'PERIODO': value[i]["PERIODO"],
+                  'NOTA': value[i]["NOTA"],
+                  'tipo': value[i]["tipo"]
+                });
+                return mipago;
+              })
+            })
+        .onError((error, stackTrace) =>
+            {print(" error $error , stackTrace  $stackTrace"), pagoList = []});
 
-    final List<Map<String, dynamic>> pagosquery = await db
-        .query("pagos", where: 'nombre LIKE ?', whereArgs: [("%$name%")]);
-
-    await db.close();
-
-    pagoList = List.generate(pagosquery.length, (i) {
-      return Pago.fromJson(pagosquery[i]);
-    });
     notifyListeners();
   }
 
