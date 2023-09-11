@@ -436,7 +436,7 @@ class DataCard extends StatelessWidget {
                                             lastDate: DateTime(2100));
                                         if (date != null) {
                                           dateController.text = formatDate(
-                                              date, [yyyy, '-', mm, '-', dd]);
+                                              date, [dd, '-', mm, '-', yyyy]);
                                         } else {
                                           dateController.text =
                                               fechaString(pago.fecha);
