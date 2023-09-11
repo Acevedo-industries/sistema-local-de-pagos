@@ -64,9 +64,12 @@ class PagoState extends ChangeNotifier {
     var pathFile = await getPathDB();
     print(pathFile);
     var pagoList = await getDataPostgreSQL();
-
-    var result = await createBackup(pathFile, pagoList);
-    stateBackup = result;
+    if (pagoList.isEmpty) {
+      stateBackup = false;
+    } else {
+      var result = await createBackup(pathFile, pagoList);
+      stateBackup = result;
+    }
     notifyListeners();
   }
 // -----------------------------------------------------------------------------+
@@ -96,15 +99,13 @@ class PagoState extends ChangeNotifier {
           return result;
         })
         .then((value) => {
-              //print(""),
+              print(""),
               pagoData = List.generate(value.length, (i) {
                 return Pago.fromJson(value[i]['pagos']);
               })
             })
-        .onError((error, stackTrace) => {
-              // print(" error $error , stackTrace  $stackTrace"),
-              pagoData = []
-            });
+        .onError((error, stackTrace) =>
+            {print(" error $error , stackTrace  $stackTrace"), pagoData = []});
 
     //print(pagoData);
     return pagoData;
