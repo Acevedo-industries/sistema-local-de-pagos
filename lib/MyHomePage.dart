@@ -24,7 +24,8 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     Widget page;
 
-    int exitValue = globals.enablefield ? 6 : 4;
+    int exitValue = globals.enablefield ? 8 : 4;
+    int predialesVale = globals.enablefield ? 4 : 3;
 
     if (selectedIndex == 0) {
       page = HomeScreenMain();
@@ -32,7 +33,7 @@ class _MyHomePageState extends State<MyHomePage> {
       page = HomeScreenMain();
     } else if (selectedIndex == 2) {
       page = TablasTequios();
-    } else if (selectedIndex == 3) {
+    } else if (selectedIndex == predialesVale) {
       page = TablasPrediales();
     } else if (selectedIndex == exitValue) {
       page = LoginScreen();
@@ -42,9 +43,9 @@ class _MyHomePageState extends State<MyHomePage> {
         exit(0);
       }
       //Navigator.pop(context);
-    } else if (selectedIndex == 4) {
+    } else if (selectedIndex == 6) {
       page = RegisterScreen();
-    } else if (selectedIndex == 5) {
+    } else if (selectedIndex == 7) {
       page = SettingScreen();
     } else {
       page = NoDataFoundScreen();
@@ -70,10 +71,20 @@ class _MyHomePageState extends State<MyHomePage> {
                     icon: Icon(Icons.card_membership),
                     label: Text('Tequios'),
                   ),
+                  if (globals.enablefield)
+                    NavigationRailDestination(
+                      icon: Icon(Icons.add_box_rounded),
+                      label: Text('Registrar nuevo Tequio'),
+                    ),
                   NavigationRailDestination(
                     icon: Icon(Icons.card_membership),
                     label: Text('Prediales'),
                   ),
+                  if (globals.enablefield)
+                    NavigationRailDestination(
+                      icon: Icon(Icons.add_box_rounded),
+                      label: Text('Registrar nuevo Predial'),
+                    ),
                   if (globals.enablefield)
                     NavigationRailDestination(
                       icon: Icon(Icons.verified_user),
