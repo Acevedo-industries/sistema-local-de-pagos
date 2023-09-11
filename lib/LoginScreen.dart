@@ -247,7 +247,6 @@ class LoginScreenState extends State<LoginScreenView> {
                   child: MaterialButton(
                     onPressed: () {
                       globals.userLogged = Usuario(
-                          index: 0,
                           username: "Anonymus",
                           contrasenia: "",
                           rol: "Anonymus");

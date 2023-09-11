@@ -1,28 +1,20 @@
-import 'dart:ffi';
-
 class Usuario {
   final String? username;
   final String? contrasenia;
   final String? rol;
-  final int index;
 
-  Usuario({this.username, this.contrasenia, this.rol, required this.index});
+  Usuario({this.username, this.contrasenia, this.rol});
 
   Usuario.fromJson(Map<String, dynamic> json)
       : username = json['username'],
         contrasenia = json['contrasenia'],
-        rol = json['rol'],
-        index = json['index'];
+        rol = json['rol'];
 
-  Map<String, dynamic> toJson() => {
-        'username': username,
-        'contrasenia': contrasenia,
-        'rol': rol,
-        'index': index
-      };
+  Map<String, dynamic> toJson() =>
+      {'username': username, 'contrasenia': contrasenia, 'rol': rol};
 
   @override
   String toString() {
-    return 'Usuario{index: $index, username: $username, contrasenia: $contrasenia, rol: $rol}';
+    return 'Usuario{username: $username, contrasenia: $contrasenia, rol: $rol}';
   }
 }

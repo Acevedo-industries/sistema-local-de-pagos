@@ -1,6 +1,4 @@
-import 'dart:convert';
-
-import 'package:app/User.dart';
+import 'package:app/stateProcess.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
@@ -11,6 +9,7 @@ import 'globals.dart' as globals;
 class UserState extends ChangeNotifier {
   var usuariosList = <Usuario>[];
   Usuario? findUser;
+  stateProcess userProcess = stateProcess(mystate: null, message: null);
 
   static Future<PostgreSQLConnection> openConnection() async {
     Map<String, dynamic> jsonData = globals.connectionPostgreSQL;
@@ -24,6 +23,44 @@ class UserState extends ChangeNotifier {
       return connection;
     }
     return connection;
+  }
+
+  void saveUser(Usuario newUsuario) async {
+    var conn = await openConnection();
+
+    if (newUsuario.username == "" || newUsuario.contrasenia == "") {
+      print("hola*****************");
+      userProcess.mystate = false;
+      userProcess.message =
+          "El usuario y la contraseña no pueden estar vacios, intente nuevamente";
+      notifyListeners();
+    } else {
+      conn
+          .transaction((c) async {
+            final result = await c.execute(
+                "INSERT INTO usuarios (username, contrasenia, rol) values (@aUsername, @aPassword, @aRol)",
+                substitutionValues: {
+                  "aUsername": newUsuario.username,
+                  "aPassword": newUsuario.contrasenia,
+                  "aRol": "administrador"
+                });
+            return result;
+          })
+          .then((value) => {
+                print("---------------------->> $value"),
+                userProcess.mystate = true,
+                userProcess.message = "Usuario Creado con exito",
+                print(userProcess),
+                notifyListeners()
+              })
+          .onError((error, stackTrace) => {
+                print("================> $error"),
+                userProcess.mystate = false,
+                userProcess.message =
+                    "Hubo un error al crear al usuario por favor verifique que el usuario no se registro previamente o intente mas tarde. \n\n\n\n $error",
+                notifyListeners()
+              });
+    }
   }
 
   void queryByUsernameAndPassword(String username, String password) async {
@@ -47,15 +84,11 @@ class UserState extends ChangeNotifier {
               if (value.isNotEmpty)
                 {
                   findUser = Usuario(
-                      index: 1,
-                      username: value[0][0],
-                      contrasenia: "",
-                      rol: value[0][1])
+                      username: value[0][0], contrasenia: "", rol: value[0][1])
                 }
               else
                 {
                   findUser = Usuario(
-                      index: 0,
                       username: "noEncontrado",
                       contrasenia: "",
                       rol: "noEncontrado")
@@ -66,10 +99,7 @@ class UserState extends ChangeNotifier {
         .onError((error, stackTrace) => {
               print("================> $error"),
               findUser = Usuario(
-                  index: 0,
-                  username: "sinConexion",
-                  contrasenia: "",
-                  rol: "sinConexion"),
+                  username: "sinConexion", contrasenia: "", rol: "sinConexion"),
               print("findUser $findUser"),
               notifyListeners()
             });

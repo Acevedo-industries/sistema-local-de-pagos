@@ -1,8 +1,56 @@
+import 'package:app/Usuario.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'UserState.dart';
+import 'components/ErrorMessage.dart';
+import 'components/LoadMessage.dart';
+import 'components/SuccessMessage.dart';
 
 class RegisterScreen extends StatelessWidget {
+  const RegisterScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (context) => UserState(),
+      child: MaterialApp(
+        title: 'Namer App',
+        theme: ThemeData(
+          useMaterial3: true,
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
+        ),
+        home: RegisterScreenView(),
+      ),
+    );
+  }
+}
+
+class RegisterScreenView extends StatefulWidget {
+  @override
+  RegisterScreenState createState() => RegisterScreenState();
+}
+
+class RegisterScreenState extends State<RegisterScreenView> {
+  final userController = TextEditingController();
+  final passwordController = TextEditingController();
+
+  bool buttonEnable = true;
+
+  void _changedButtonEnable(bool value) {
+    setState(() {
+      buttonEnable = value;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var appState = context.watch<UserState>();
+    print(appState.userProcess);
+    ((value) => {
+          if (value != null) {_changedButtonEnable(true)}
+        })(appState.userProcess.mystate);
+
     return Scaffold(
       backgroundColor: Color(0xffffffff),
       body: Align(
@@ -26,7 +74,7 @@ class RegisterScreen extends StatelessWidget {
                     color: Color(0xff000000),
                   ),
                 ),
-                Padding(
+                /* Padding(
                   padding: EdgeInsets.fromLTRB(0, 30, 0, 5),
                   child: TextField(
                     controller: TextEditingController(),
@@ -69,11 +117,11 @@ class RegisterScreen extends StatelessWidget {
                           EdgeInsets.symmetric(vertical: 8, horizontal: 12),
                     ),
                   ),
-                ),
+                ), */
                 Padding(
                   padding: EdgeInsets.symmetric(vertical: 5, horizontal: 0),
                   child: TextField(
-                    controller: TextEditingController(),
+                    controller: userController,
                     obscureText: false,
                     textAlign: TextAlign.start,
                     maxLines: 1,
@@ -117,7 +165,7 @@ class RegisterScreen extends StatelessWidget {
                 Padding(
                   padding: EdgeInsets.symmetric(vertical: 5, horizontal: 0),
                   child: TextField(
-                    controller: TextEditingController(),
+                    controller: passwordController,
                     obscureText: false,
                     textAlign: TextAlign.start,
                     maxLines: 1,
@@ -163,26 +211,41 @@ class RegisterScreen extends StatelessWidget {
                 Padding(
                   padding: EdgeInsets.fromLTRB(0, 30, 0, 16),
                   child: MaterialButton(
-                    onPressed: () {},
-                    color: Color(0xffff5630),
+                    onPressed: () {
+                      _changedButtonEnable(false);
+                      appState.saveUser(Usuario(
+                          username: userController.text,
+                          contrasenia: passwordController.text,
+                          rol: "administrador"));
+                    },
+                    color: buttonEnable
+                        ? Color(0xffff5630)
+                        : Color.fromARGB(255, 153, 145, 143),
                     elevation: 3,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12.0),
                     ),
                     padding: EdgeInsets.all(16),
+                    textColor: Color(0xffffffff),
+                    height: 50,
+                    minWidth: MediaQuery.of(context).size.width,
                     child: Text(
-                      "Crear usuario",
+                      buttonEnable ? "Crear usuario" : "Guardando datos ... ",
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
                         fontStyle: FontStyle.normal,
                       ),
                     ),
-                    textColor: Color(0xffffffff),
-                    height: 50,
-                    minWidth: MediaQuery.of(context).size.width,
                   ),
                 ),
+                if (buttonEnable == false &&
+                    appState.userProcess.mystate == null)
+                  LoadMessage("Guardando datos ..."),
+                if (appState.userProcess.mystate == true)
+                  SuccessMessage(appState.userProcess.message.toString()),
+                if (appState.userProcess.mystate == false)
+                  ErrorMessage(appState.userProcess.message.toString()),
               ],
             ),
           ),
