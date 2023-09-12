@@ -325,4 +325,36 @@ class PagoState extends ChangeNotifier {
               notifyListeners()
             });
   }
+
+  void createPago(Pago myPago) async {
+    var conn = await openConnection();
+
+    await conn
+        .transaction((c) async {
+          final result = await c.mappedResultsQuery(
+              "INSERT INTO pagos (\"FECHA\", \"NOMBRE\", \"CANTIDAD\", \"PERIODO\", \"NOTA\", tipo) values (@uFecha, @uNombre, @uCantidad, @uPeriodo, @uNota, @uTipo)",
+              substitutionValues: {
+                "uFecha": myPago.fecha,
+                "uNombre": myPago.nombre,
+                "uCantidad": myPago.cantidad,
+                "uPeriodo": myPago.periodo,
+                "uNota": myPago.nota,
+                "uTipo": myPago.tipo
+              });
+          return result;
+        })
+        .then((value) => {
+              print("$value"),
+              pagoProcess.mystate = true,
+              pagoProcess.message = "Registro de pago creado con exito",
+              notifyListeners()
+            })
+        .onError((error, stackTrace) => {
+              print(" error $error , stackTrace  $stackTrace"),
+              pagoProcess.mystate = false,
+              pagoProcess.message =
+                  "Hubo un error al crear el registro del pago, por favor verifique los datos o intente mas tarde. \n\n\n\n $error",
+              notifyListeners()
+            });
+  }
 }

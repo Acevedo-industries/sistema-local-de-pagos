@@ -10,6 +10,7 @@ import 'NoDataFoundScreen.dart';
 import 'LoginScreen.dart';
 import 'PasswordChangeScreen.dart';
 import 'globals.dart' as globals;
+import 'CreateTequio.dart';
 import 'dart:io';
 
 class MyHomePage extends StatefulWidget {
@@ -33,6 +34,8 @@ class _MyHomePageState extends State<MyHomePage> {
       page = HomeScreenMain();
     } else if (selectedIndex == 2) {
       page = TablasTequios();
+    } else if (selectedIndex == 3) {
+      page = CreateTequioScreen();
     } else if (selectedIndex == predialesVale) {
       page = TablasPrediales();
     } else if (selectedIndex == exitValue) {
