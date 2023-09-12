@@ -188,21 +188,32 @@ class PagoState extends ChangeNotifier {
 // *****************************************************************************
 
   Future<List<Pago>> getTequios() async {
-    if (globals.enablefield) return getTablePostgreSQL("tequio");
-    return getTableSql3("tequio");
+    var resultPosgreql = await getTablePostgreSQL("tequio");
+    if (resultPosgreql.isEmpty) {
+      print("buscando en sqlite3");
+      return getTableSql3("tequio");
+    } else {
+      print("regresando el resultado de postgresql");
+      return resultPosgreql;
+    }
   }
 
   Future<List<Pago>> getPrediales() async {
-    if (globals.enablefield) return getTablePostgreSQL("predial");
-    return getTableSql3("predial");
+    var resultPosgreql = await getTablePostgreSQL("predial");
+    if (resultPosgreql.isEmpty) {
+      print("buscando en sqlite3");
+      return getTableSql3("predial");
+    } else {
+      print("regresando el resultado de postgresql");
+      return resultPosgreql;
+    }
   }
 
   // *****************************************************************************
 
   void queryByName(String name) async {
     final newname = name.trim().replaceAll(RegExp(r' '), '%');
-    if (globals.enablefield) return queryByNamePostgreSQL(newname);
-    return queryByNameSql3(newname);
+    return queryByNamePostgreSQL(newname);
   }
 
   void queryByNamePostgreSQL(String name) async {
@@ -219,14 +230,13 @@ class PagoState extends ChangeNotifier {
               print(""),
               pagoList = List.generate(value.length, (i) {
                 return Pago.fromJson(value[i]['pagos']);
-              })
+              }),
+              notifyListeners()
             })
         .onError((error, stackTrace) => {
               print(" error $error , stackTrace  $stackTrace"),
-              pagoList = <Pago>[]
+              queryByNameSql3(name)
             });
-
-    notifyListeners();
   }
 
   void queryByNameSql3(String name) async {
