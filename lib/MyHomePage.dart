@@ -26,37 +26,84 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     Widget page;
 
-    int exitValue = globals.enablefield ? 9 : 4;
-    int predialesVale = globals.enablefield ? 4 : 3;
-
-    if (selectedIndex == 0) {
-      page = HomeScreenMain();
-    } else if (selectedIndex == 1) {
-      page = HomeScreenMain();
-    } else if (selectedIndex == 2) {
-      page = TablasTequios();
-    } else if (selectedIndex == 3) {
-      page = CreateTequioScreen();
-    } else if (selectedIndex == predialesVale) {
-      page = TablasPrediales();
-    } else if (selectedIndex == 5) {
-      page = CreatePredialScreen();
-    } else if (selectedIndex == exitValue) {
-      page = LoginScreen();
-      if (Platform.isAndroid) {
-        SystemNavigator.pop();
+    if (globals.intRol == 3) {
+      if (selectedIndex == 0) {
+        page = HomeScreenMain();
+      } else if (selectedIndex == 1) {
+        page = HomeScreenMain();
+      } else if (selectedIndex == 2) {
+        page = TablasTequios();
+      } else if (selectedIndex == 3) {
+        page = TablasPrediales();
+      } else if (selectedIndex == 4) {
+        page = SettingScreen();
+      } else if (selectedIndex == 5) {
+        page = LoginScreen();
+        if (Platform.isAndroid) {
+          SystemNavigator.pop();
+        } else {
+          exit(0);
+        }
+        //Navigator.pop(context);
       } else {
-        exit(0);
+        page = NoDataFoundScreen();
       }
-      //Navigator.pop(context);
-    } else if (selectedIndex == 6) {
-      page = RegisterScreen();
-    } else if (selectedIndex == 7) {
-      page = PasswordChangeScreen();
-    } else if (selectedIndex == 8) {
-      page = SettingScreen();
+    } else if (globals.intRol == 2) {
+      if (selectedIndex == 0) {
+        page = HomeScreenMain();
+      } else if (selectedIndex == 1) {
+        page = HomeScreenMain();
+      } else if (selectedIndex == 2) {
+        page = TablasTequios();
+      } else if (selectedIndex == 3) {
+        page = CreateTequioScreen();
+      } else if (selectedIndex == 4) {
+        page = TablasPrediales();
+      } else if (selectedIndex == 5) {
+        page = CreatePredialScreen();
+      } else if (selectedIndex == 6) {
+        page = SettingScreen();
+      } else if (selectedIndex == 7) {
+        page = LoginScreen();
+        if (Platform.isAndroid) {
+          SystemNavigator.pop();
+        } else {
+          exit(0);
+        }
+        //Navigator.pop(context);
+      } else {
+        page = NoDataFoundScreen();
+      }
     } else {
-      page = NoDataFoundScreen();
+      if (selectedIndex == 0) {
+        page = HomeScreenMain();
+      } else if (selectedIndex == 1) {
+        page = HomeScreenMain();
+      } else if (selectedIndex == 2) {
+        page = TablasTequios();
+      } else if (selectedIndex == 3) {
+        page = CreateTequioScreen();
+      } else if (selectedIndex == 4) {
+        page = TablasPrediales();
+      } else if (selectedIndex == 5) {
+        page = CreatePredialScreen();
+      } else if (selectedIndex == 6) {
+        page = RegisterScreen();
+      } else if (selectedIndex == 7) {
+        page = PasswordChangeScreen();
+      } else if (selectedIndex == 8) {
+        page = SettingScreen();
+      } else if (selectedIndex == 9) {
+        page = LoginScreen();
+        if (Platform.isAndroid) {
+          SystemNavigator.pop();
+        } else {
+          exit(0);
+        }
+        //Navigator.pop(context);
+      } else {
+        page = NoDataFoundScreen();
+      }
     }
 
     return LayoutBuilder(builder: (context, constraints) {
@@ -71,39 +118,42 @@ class _MyHomePageState extends State<MyHomePage> {
                     icon: Icon(Icons.account_circle),
                     label: Text(globals.userLogged?.username ?? 'Desconocido'),
                   ),
-                  NavigationRailDestination(
-                    icon: Icon(Icons.search),
-                    label: Text('Buscar'),
-                  ),
-                  NavigationRailDestination(
-                    icon: Icon(Icons.card_membership),
-                    label: Text('Tequios'),
-                  ),
-                  if (globals.enablefield)
+                  if (globals.intRol <= 3)
+                    NavigationRailDestination(
+                      icon: Icon(Icons.search),
+                      label: Text('Buscar'),
+                    ),
+                  if (globals.intRol <= 3)
+                    NavigationRailDestination(
+                      icon: Icon(Icons.card_membership),
+                      label: Text('Tequios'),
+                    ),
+                  if (globals.intRol <= 2)
                     NavigationRailDestination(
                       icon: Icon(Icons.add_box_rounded),
                       label: Text('Registrar nuevo Tequio'),
                     ),
-                  NavigationRailDestination(
-                    icon: Icon(Icons.card_membership),
-                    label: Text('Prediales'),
-                  ),
-                  if (globals.enablefield)
+                  if (globals.intRol <= 3)
+                    NavigationRailDestination(
+                      icon: Icon(Icons.card_membership),
+                      label: Text('Prediales'),
+                    ),
+                  if (globals.intRol <= 2)
                     NavigationRailDestination(
                       icon: Icon(Icons.add_box_rounded),
                       label: Text('Registrar nuevo Predial'),
                     ),
-                  if (globals.enablefield)
+                  if (globals.intRol <= 1)
                     NavigationRailDestination(
                       icon: Icon(Icons.supervised_user_circle_rounded),
                       label: Text('Crear usuario'),
                     ),
-                  if (globals.enablefield)
+                  if (globals.intRol <= 1)
                     NavigationRailDestination(
                       icon: Icon(Icons.verified_user),
                       label: Text('Cambiar contraseña'),
                     ),
-                  if (globals.enablefield)
+                  if (globals.intRol <= 3)
                     NavigationRailDestination(
                       icon: Icon(Icons.construction_sharp),
                       label: Text('Configuracion'),
