@@ -11,6 +11,7 @@ import 'LoginScreen.dart';
 import 'PasswordChangeScreen.dart';
 import 'globals.dart' as globals;
 import 'CreateTequio.dart';
+import 'CreatePredial.dart';
 import 'dart:io';
 
 class MyHomePage extends StatefulWidget {
@@ -38,6 +39,8 @@ class _MyHomePageState extends State<MyHomePage> {
       page = CreateTequioScreen();
     } else if (selectedIndex == predialesVale) {
       page = TablasPrediales();
+    } else if (selectedIndex == 5) {
+      page = CreatePredialScreen();
     } else if (selectedIndex == exitValue) {
       page = LoginScreen();
       if (Platform.isAndroid) {
