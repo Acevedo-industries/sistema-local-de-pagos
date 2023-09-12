@@ -12,6 +12,7 @@ import 'dart:io';
 class PagoState extends ChangeNotifier {
   var pagoList = <Pago>[];
   bool? stateBackup;
+  stateProcess backupProcess = stateProcess(mystate: null, message: null);
   stateProcess pagoProcess = stateProcess(mystate: null, message: null);
   int folioProccess = 0;
   final dataBaseSql3Name = 'sistemaData.db';
@@ -52,26 +53,31 @@ class PagoState extends ChangeNotifier {
         await db.insert('pagos', element.toJsonSqlite3(),
             conflictAlgorithm: ConflictAlgorithm.replace);
       }
+      backupProcess.mystate = true;
+      backupProcess.message = "La descarga se realizo con exito.";
+      return true;
     } on Exception catch (e) {
       print(e);
+      backupProcess.mystate = false;
+      backupProcess.message =
+          "Ocurrio un error al realizar la descarga. \n\n\n\n $e";
       return false;
     }
-
-    return true;
   }
 
 // -----------------------------------------------------------------------------+
 
   void createBackupData() async {
-    stateBackup = null;
+    backupProcess.mystate = null;
+    backupProcess.message = null;
     var pathFile = await getPathDB();
     print(pathFile);
     var pagoList = await getDataPostgreSQL();
     if (pagoList.isEmpty) {
-      stateBackup = false;
+      backupProcess.mystate = false;
+      backupProcess.message = "No se encontro el servidor de Base de Datos.";
     } else {
-      var result = await createBackup(pathFile, pagoList);
-      stateBackup = result;
+      await createBackup(pathFile, pagoList);
     }
     notifyListeners();
   }

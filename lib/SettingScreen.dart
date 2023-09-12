@@ -45,7 +45,7 @@ class SettingScreenState extends State<SettingScreenView> {
 
     ((value) => {
           if (value != null) {_changedButtonEnable(true)}
-        })(appState.stateBackup);
+        })(appState.backupProcess.mystate);
 
     return Scaffold(
       backgroundColor: Color(0xffffffff),
@@ -116,13 +116,12 @@ class SettingScreenState extends State<SettingScreenView> {
                 ],
               ),
             ),
-            if (buttonEnable == false && appState.stateBackup == null)
+            if (buttonEnable == false && appState.backupProcess.mystate == null)
               LoadMessage("Descargando una copia de los datos ..."),
-            if (appState.stateBackup != null && appState.stateBackup == true)
-              SuccessMessage("Descarga de datos realizada con exito."),
-            if (appState.stateBackup != null && appState.stateBackup == false)
-              ErrorMessage(
-                  "Ocurrio un error al hacer la descarga, intentelo nuevamente."),
+            if (appState.backupProcess.mystate == true)
+              SuccessMessage(appState.backupProcess.message.toString()),
+            if (appState.backupProcess.mystate == false)
+              ErrorMessage(appState.backupProcess.message.toString()),
           ],
         ),
       ),
