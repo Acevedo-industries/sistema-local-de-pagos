@@ -1,3 +1,4 @@
+import 'package:app/stateProcess.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'dart:async';
@@ -11,6 +12,8 @@ import 'dart:io';
 class PagoState extends ChangeNotifier {
   var pagoList = <Pago>[];
   bool? stateBackup;
+  stateProcess pagoProcess = stateProcess(mystate: null, message: null);
+  int folioProccess = 0;
   final dataBaseSql3Name = 'sistemaData.db';
   var connectionUri = globals.connectionPostgreSQL;
 
@@ -287,5 +290,39 @@ class PagoState extends ChangeNotifier {
         nota: "",
         tipo: "tequio"));
     notifyListeners();
+  }
+
+  void updatePago(Pago myPago) async {
+    var conn = await openConnection();
+
+    await conn
+        .transaction((c) async {
+          final result = await c.mappedResultsQuery(
+              "UPDATE pagos SET \"FECHA\"=@uFecha, \"NOMBRE\"=@uNombre, \"CANTIDAD\"=@uCantidad, \"PERIODO\"=@uPeriodo, \"NOTA\"=@uNota WHERE \"FOLIO\" = @uFolio",
+              substitutionValues: {
+                "uFecha": myPago.fecha,
+                "uNombre": myPago.nombre,
+                "uCantidad": myPago.cantidad,
+                "uPeriodo": myPago.periodo,
+                "uNota": myPago.nota,
+                "uFolio": myPago.folio
+              });
+          return result;
+        })
+        .then((value) => {
+              print("$value"),
+              pagoProcess.mystate = true,
+              pagoProcess.message = "Registro de pago actualizado con exito",
+              folioProccess = myPago.folio!,
+              notifyListeners()
+            })
+        .onError((error, stackTrace) => {
+              print(" error $error , stackTrace  $stackTrace"),
+              pagoProcess.mystate = false,
+              pagoProcess.message =
+                  "Hubo un error al actualizar el registro del pago, por favor verifique los datos o intente mas tarde. \n\n\n\n $error",
+              folioProccess = myPago.folio!,
+              notifyListeners()
+            });
   }
 }
