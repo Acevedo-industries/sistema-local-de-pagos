@@ -104,13 +104,14 @@ class PagoState extends ChangeNotifier {
 
     await conn
         .transaction((c) async {
-          final result = await c.mappedResultsQuery("SELECT * FROM pagos");
+          final result = await c.mappedResultsQuery(
+              "SELECT * FROM (SELECT * FROM pagostequio UNION SELECT * FROM pagospredial) as consulta1");
           return result;
         })
         .then((value) => {
               print(""),
               pagoData = List.generate(value.length, (i) {
-                return Pago.fromJson(value[i]['pagos']);
+                return Pago.fromJson(value[i]['']);
               })
             })
         .onError((error, stackTrace) =>
@@ -123,18 +124,24 @@ class PagoState extends ChangeNotifier {
   Future<List<Pago>> getTablePostgreSQL(String tipoPago) async {
     var conn = await openConnection();
     var pagoTequios = <Pago>[];
+    String tablename = "";
+
+    if (tipoPago == "tequio") {
+      tablename = "pagostequio";
+    }
+    if (tipoPago == "predial") {
+      tablename = "pagospredial";
+    }
 
     await conn
         .transaction((c) async {
-          final result = await c.mappedResultsQuery(
-              "SELECT * FROM pagos WHERE tipo = @aTipo ",
-              substitutionValues: {"aTipo": tipoPago});
+          final result = await c.mappedResultsQuery("SELECT * FROM $tablename");
           return result;
         })
         .then((value) => {
-              //print(""),
+              //print("$value"),
               pagoTequios = List.generate(value.length, (i) {
-                return Pago.fromJson(value[i]['pagos']);
+                return Pago.fromJson(value[i][tablename]);
               })
             })
         .onError((error, stackTrace) => {
@@ -142,7 +149,6 @@ class PagoState extends ChangeNotifier {
               pagoTequios = []
             });
 
-    //print(pagoTequios);
     return pagoTequios;
   }
 
@@ -228,14 +234,14 @@ class PagoState extends ChangeNotifier {
     await conn
         .transaction((c) async {
           final result = await c.mappedResultsQuery(
-              "SELECT * FROM pagos WHERE \"NOMBRE\" like @aNombre ",
+              "SELECT * FROM (SELECT * FROM pagostequio UNION SELECT * FROM pagospredial) as consulta1 WHERE \"NOMBRE\" like @aNombre ",
               substitutionValues: {"aNombre": "%$name%"});
           return result;
         })
         .then((value) => {
-              print(""),
+              //print("$value"),
               pagoList = List.generate(value.length, (i) {
-                return Pago.fromJson(value[i]['pagos']);
+                return Pago.fromJson(value[i]['']);
               }),
               notifyListeners()
             })
@@ -311,10 +317,18 @@ class PagoState extends ChangeNotifier {
   void updatePago(Pago myPago) async {
     var conn = await openConnection();
 
+    String tablename = "";
+    if (myPago.tipo == "tequio") {
+      tablename = "pagostequio";
+    }
+    if (myPago.tipo == "predial") {
+      tablename = "pagospredial";
+    }
+
     await conn
         .transaction((c) async {
           final result = await c.mappedResultsQuery(
-              "UPDATE pagos SET \"FECHA\"=@uFecha, \"NOMBRE\"=@uNombre, \"CANTIDAD\"=@uCantidad, \"PERIODO\"=@uPeriodo, \"NOTA\"=@uNota WHERE \"FOLIO\" = @uFolio",
+              "UPDATE $tablename SET \"FECHA\"=@uFecha, \"NOMBRE\"=@uNombre, \"CANTIDAD\"=@uCantidad, \"PERIODO\"=@uPeriodo, \"NOTA\"=@uNota WHERE \"FOLIO\" = @uFolio",
               substitutionValues: {
                 "uFecha": myPago.fecha,
                 "uNombre": myPago.nombre,
@@ -345,10 +359,19 @@ class PagoState extends ChangeNotifier {
   void createPago(Pago myPago) async {
     var conn = await openConnection();
 
+    String tablename = "";
+
+    if (myPago.tipo == "tequio") {
+      tablename = "pagostequio";
+    }
+    if (myPago.tipo == "predial") {
+      tablename = "pagospredial";
+    }
+
     await conn
         .transaction((c) async {
           final result = await c.mappedResultsQuery(
-              "INSERT INTO pagos (\"FECHA\", \"NOMBRE\", \"CANTIDAD\", \"PERIODO\", \"NOTA\", tipo) values (@uFecha, @uNombre, @uCantidad, @uPeriodo, @uNota, @uTipo)",
+              "INSERT INTO $tablename (\"FECHA\", \"NOMBRE\", \"CANTIDAD\", \"PERIODO\", \"NOTA\", tipo) values (@uFecha, @uNombre, @uCantidad, @uPeriodo, @uNota, @uTipo)",
               substitutionValues: {
                 "uFecha": myPago.fecha,
                 "uNombre": myPago.nombre,
