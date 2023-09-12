@@ -63,17 +63,37 @@ class RegisterScreenState extends State<RegisterScreenView> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.max,
               children: [
-                Text(
-                  "Crear nuevo usuario",
-                  textAlign: TextAlign.start,
-                  overflow: TextOverflow.clip,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontStyle: FontStyle.normal,
-                    fontSize: 24,
-                    color: Color(0xff000000),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(0, 0, 0, 20),
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Text(
+                      "Crear nuevo usuario",
+                      textAlign: TextAlign.start,
+                      overflow: TextOverflow.clip,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontStyle: FontStyle.normal,
+                        fontSize: 24,
+                        color: Color(0xff000000),
+                      ),
+                    ),
                   ),
                 ),
+                Align(
+                    alignment: Alignment.center,
+                    child: Container(
+                        alignment: Alignment.center,
+                        margin:
+                            EdgeInsets.symmetric(vertical: 20, horizontal: 0),
+                        padding: EdgeInsets.all(0),
+                        decoration: BoxDecoration(
+                          color: Color(0x1fffffff),
+                          shape: BoxShape.rectangle,
+                          borderRadius: BorderRadius.zero,
+                          border:
+                              Border.all(color: Color(0x4dffffff), width: 1),
+                        ))),
                 /* Padding(
                   padding: EdgeInsets.fromLTRB(0, 30, 0, 5),
                   child: TextField(

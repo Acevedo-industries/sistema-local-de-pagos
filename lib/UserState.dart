@@ -39,8 +39,8 @@ class UserState extends ChangeNotifier {
             final result = await c.execute(
                 "INSERT INTO usuarios (username, contrasenia, rol) values (@aUsername, @aPassword, @aRol)",
                 substitutionValues: {
-                  "aUsername": newUsuario.username,
-                  "aPassword": newUsuario.contrasenia,
+                  "aUsername": newUsuario.username.toString().trim(),
+                  "aPassword": newUsuario.contrasenia.toString().trim(),
                   "aRol": "administrador"
                 });
             return result;
