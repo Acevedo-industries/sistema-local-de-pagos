@@ -25,6 +25,51 @@ class UserState extends ChangeNotifier {
     return connection;
   }
 
+  void changePasswordUser(Usuario newUsuario) async {
+    var conn = await openConnection();
+
+    if (newUsuario.username == "" || newUsuario.contrasenia == "") {
+      userProcess.mystate = false;
+      userProcess.message =
+          "El usuario y la contraseña no pueden estar vacios, intente nuevamente";
+      notifyListeners();
+    } else {
+      conn
+          .transaction((c) async {
+            final result = await c.execute(
+                "UPDATE usuarios SET contrasenia=@aPassword WHERE username = @aUsername",
+                substitutionValues: {
+                  "aUsername": newUsuario.username.toString().trim(),
+                  "aPassword": newUsuario.contrasenia.toString().trim()
+                });
+            return result;
+          })
+          .then((value) => {
+                print("---------------------->> $value"),
+                if (value == 1)
+                  {
+                    userProcess.mystate = true,
+                    userProcess.message = "Contraseña cambiada con exito",
+                  }
+                else
+                  {
+                    userProcess.mystate = false,
+                    userProcess.message =
+                        "Hubo un error al cambiar la contraseña del usuario por favor verifique que el usuario existe o intente mas tarde.",
+                  },
+                print(userProcess),
+                notifyListeners()
+              })
+          .onError((error, stackTrace) => {
+                print("================> $error"),
+                userProcess.mystate = false,
+                userProcess.message =
+                    "Hubo un error al cambiar la contraseña del usuario por favor verifique que el usuario existe o intente mas tarde. \n\n\n\n $error",
+                notifyListeners()
+              });
+    }
+  }
+
   void saveUser(Usuario newUsuario) async {
     var conn = await openConnection();
 

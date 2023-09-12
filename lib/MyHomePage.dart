@@ -8,7 +8,7 @@ import 'RegisterScreen.dart';
 import 'SettingScreen.dart';
 import 'NoDataFoundScreen.dart';
 import 'LoginScreen.dart';
-import 'ChangePasswordScreen.dart';
+import 'PasswordChangeScreen.dart';
 import 'globals.dart' as globals;
 import 'dart:io';
 
@@ -24,7 +24,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     Widget page;
 
-    int exitValue = globals.enablefield ? 8 : 4;
+    int exitValue = globals.enablefield ? 9 : 4;
     int predialesVale = globals.enablefield ? 4 : 3;
 
     if (selectedIndex == 0) {
@@ -46,6 +46,8 @@ class _MyHomePageState extends State<MyHomePage> {
     } else if (selectedIndex == 6) {
       page = RegisterScreen();
     } else if (selectedIndex == 7) {
+      page = PasswordChangeScreen();
+    } else if (selectedIndex == 8) {
       page = SettingScreen();
     } else {
       page = NoDataFoundScreen();
@@ -87,8 +89,13 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                   if (globals.enablefield)
                     NavigationRailDestination(
-                      icon: Icon(Icons.verified_user),
+                      icon: Icon(Icons.supervised_user_circle_rounded),
                       label: Text('Crear usuario'),
+                    ),
+                  if (globals.enablefield)
+                    NavigationRailDestination(
+                      icon: Icon(Icons.verified_user),
+                      label: Text('Cambiar contraseña'),
                     ),
                   if (globals.enablefield)
                     NavigationRailDestination(
