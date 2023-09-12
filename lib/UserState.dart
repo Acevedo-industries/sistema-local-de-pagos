@@ -29,7 +29,6 @@ class UserState extends ChangeNotifier {
     var conn = await openConnection();
 
     if (newUsuario.username == "" || newUsuario.contrasenia == "") {
-      print("hola*****************");
       userProcess.mystate = false;
       userProcess.message =
           "El usuario y la contraseña no pueden estar vacios, intente nuevamente";

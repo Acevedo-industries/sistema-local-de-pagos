@@ -208,37 +208,38 @@ class RegisterScreenState extends State<RegisterScreenView> {
                     ),
                   ),
                 ),
-                Padding(
-                  padding: EdgeInsets.fromLTRB(0, 30, 0, 16),
-                  child: MaterialButton(
-                    onPressed: () {
-                      _changedButtonEnable(false);
-                      appState.saveUser(Usuario(
-                          username: userController.text,
-                          contrasenia: passwordController.text,
-                          rol: "administrador"));
-                    },
-                    color: buttonEnable
-                        ? Color(0xffff5630)
-                        : Color.fromARGB(255, 153, 145, 143),
-                    elevation: 3,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12.0),
-                    ),
-                    padding: EdgeInsets.all(16),
-                    textColor: Color(0xffffffff),
-                    height: 50,
-                    minWidth: MediaQuery.of(context).size.width,
-                    child: Text(
-                      buttonEnable ? "Crear usuario" : "Guardando datos ... ",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                        fontStyle: FontStyle.normal,
+                if (buttonEnable)
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(0, 30, 0, 16),
+                    child: MaterialButton(
+                      onPressed: () {
+                        _changedButtonEnable(false);
+                        appState.saveUser(Usuario(
+                            username: userController.text,
+                            contrasenia: passwordController.text,
+                            rol: "administrador"));
+                      },
+                      color: buttonEnable
+                          ? Color(0xffff5630)
+                          : Color.fromARGB(255, 153, 145, 143),
+                      elevation: 3,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12.0),
+                      ),
+                      padding: EdgeInsets.all(16),
+                      textColor: Color(0xffffffff),
+                      height: 50,
+                      minWidth: MediaQuery.of(context).size.width,
+                      child: Text(
+                        buttonEnable ? "Crear usuario" : "Guardando datos ... ",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          fontStyle: FontStyle.normal,
+                        ),
                       ),
                     ),
                   ),
-                ),
                 if (buttonEnable == false &&
                     appState.userProcess.mystate == null)
                   LoadMessage("Guardando datos ..."),
