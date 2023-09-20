@@ -258,8 +258,6 @@ class PagoState extends ChangeNotifier {
             })
         .onError((error, stackTrace) => {
               print(" error $error , stackTrace  $stackTrace"),
-              searchProcess.mystate = false,
-              searchProcess.message = "error",
               queryByNameSql3(name)
             });
   }
@@ -268,28 +266,41 @@ class PagoState extends ChangeNotifier {
     var db = await openDatabase(dataBaseSql3Name);
     pagoList = <Pago>[];
     await db
-        .query("pagos", where: 'nombre LIKE ?', whereArgs: [("%$name%")])
+        .query("pagos",
+            where: ' LOWER(nombre) LIKE ?', whereArgs: [("%$name%")])
         .then((value) => {
               print(""),
-              pagoList = List.generate(value.length, (i) {
-                DateTime? miFecha;
-                if (value[i]['FECHA'] != null) {
-                  miFecha = DateTime.parse(value[i]['FECHA'].toString());
+              if (value.length > 0)
+                {
+                  pagoList = List.generate(value.length, (i) {
+                    DateTime? miFecha;
+                    if (value[i]['FECHA'] != null) {
+                      miFecha = DateTime.parse(value[i]['FECHA'].toString());
+                    }
+                    var mipago = Pago.fromJson({
+                      'NOMBRE': value[i]["NOMBRE"],
+                      'FECHA': miFecha,
+                      'FOLIO': value[i]["FOLIO"],
+                      'CANTIDAD': value[i]["CANTIDAD"],
+                      'PERIODO': value[i]["PERIODO"],
+                      'NOTA': value[i]["NOTA"],
+                      'tipo': value[i]["tipo"]
+                    });
+                    return mipago;
+                  }),
+                  searchProcess.mystate = true,
+                  searchProcess.message = "",
                 }
-                var mipago = Pago.fromJson({
-                  'NOMBRE': value[i]["NOMBRE"],
-                  'FECHA': miFecha,
-                  'FOLIO': value[i]["FOLIO"],
-                  'CANTIDAD': value[i]["CANTIDAD"],
-                  'PERIODO': value[i]["PERIODO"],
-                  'NOTA': value[i]["NOTA"],
-                  'tipo': value[i]["tipo"]
-                });
-                return mipago;
-              })
+              else
+                {
+                  searchProcess.mystate = false,
+                  searchProcess.message = "noEncontrado",
+                },
             })
         .onError((error, stackTrace) => {
               print(" error $error , stackTrace  $stackTrace"),
+              searchProcess.mystate = false,
+              searchProcess.message = "",
               pagoList = [
                 Pago(
                     nombre:
