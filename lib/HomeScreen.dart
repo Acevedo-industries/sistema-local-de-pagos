@@ -80,14 +80,6 @@ class HomeScreenState extends State<HomeScreenView> {
             color: Color(0xff000000),
           ),
         ),
-        leading: Icon(
-          Icons.menu,
-          color: Color(0xff212435),
-          size: 24,
-        ),
-        actions: [
-          Icon(Icons.search, color: Color(0xff212435), size: 24),
-        ],
       ),
       body: SingleChildScrollView(
         child: Column(
