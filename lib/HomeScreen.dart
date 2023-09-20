@@ -113,6 +113,10 @@ class HomeScreen extends StatelessWidget {
                         flex: 1,
                         child: TextField(
                           autofocus: true,
+                          onSubmitted: (value) {
+                            appState.queryByName(myController.text);
+                          },
+                          textInputAction: TextInputAction.search,
                           controller:
                               myController, //.text= "Albertha Navarro Flores",
                           obscureText: false,
