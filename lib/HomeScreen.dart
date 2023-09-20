@@ -1,10 +1,13 @@
 import 'package:app/components/ErrorMessage.dart';
+import 'package:app/components/NoResult.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'PagoState.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:app/DataCard.dart';
+
+import 'components/LoadMessage.dart';
 
 class HomeScreenMain extends StatelessWidget {
   const HomeScreenMain({super.key});
@@ -28,18 +31,35 @@ class HomeScreenMain extends StatelessWidget {
           useMaterial3: true,
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
         ),
-        home: HomeScreen(),
+        home: HomeScreenView(),
       ),
     );
   }
 }
 
-class HomeScreen extends StatelessWidget {
+class HomeScreenView extends StatefulWidget {
+  @override
+  HomeScreenState createState() => HomeScreenState();
+}
+
+class HomeScreenState extends State<HomeScreenView> {
   final myController = TextEditingController(text: "");
+
+  bool buttonEnable = true;
+
+  void _changedButtonEnable(bool value) {
+    setState(() {
+      buttonEnable = value;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<PagoState>();
+
+    ((value) => {
+          if (value != null) {_changedButtonEnable(true)}
+        })(appState.searchProcess.mystate);
 
     return Scaffold(
       backgroundColor: Color(0xffffffff),
@@ -114,7 +134,10 @@ class HomeScreen extends StatelessWidget {
                         child: TextField(
                           autofocus: true,
                           onSubmitted: (value) {
-                            appState.queryByName(myController.text);
+                            if (myController.text.trim().isNotEmpty) {
+                              _changedButtonEnable(false);
+                              appState.queryByName(myController.text);
+                            }
                           },
                           textInputAction: TextInputAction.search,
                           controller:
@@ -163,7 +186,10 @@ class HomeScreen extends StatelessWidget {
                 alignment: Alignment(0.7, 0.0),
                 child: MaterialButton(
                   onPressed: () {
-                    appState.queryByName(myController.text);
+                    if (myController.text.trim().isNotEmpty) {
+                      _changedButtonEnable(false);
+                      appState.queryByName(myController.text);
+                    }
                   },
                   color: Color(0xffff5630),
                   elevation: 3,
@@ -175,7 +201,7 @@ class HomeScreen extends StatelessWidget {
                   height: 40,
                   minWidth: 140,
                   child: Text(
-                    "Buscar",
+                    buttonEnable ? "Buscar" : "Buscando ... ",
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
@@ -202,10 +228,23 @@ class HomeScreen extends StatelessWidget {
                         mainAxisSize: MainAxisSize.max,
                         children: [
                           Align(alignment: Alignment.center),
-                          for (var pago in appState.pagoList)
-                            pago.tipo != null
-                                ? DataCard(pago: pago)
-                                : ErrorMessage(pago.nombre.toString())
+                          if (!buttonEnable)
+                            LoadMessage(
+                                "Buscando ${myController.text} en la base de datos ...")
+                          else if (appState.searchProcess.message ==
+                                  "noEncontrado" &&
+                              appState.searchProcess.mystate == false)
+                            NoResult(
+                                "No se encontro ningun registro en la base de datos \n que coincida con alguna de las variaciones del texto buscado: \n\n '${myController.text}' ")
+                          else if (appState.searchProcess.message == "error" &&
+                              appState.searchProcess.mystate == false)
+                            ErrorMessage(
+                                "Hubo un error al realizar la busqueda, por favor verifique los datos o intente mas tarde.")
+                          else
+                            for (var pago in appState.pagoList)
+                              pago.tipo != null
+                                  ? DataCard(pago: pago)
+                                  : ErrorMessage(pago.nombre.toString())
                         ],
                       ),
                     ],

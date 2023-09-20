@@ -14,6 +14,7 @@ class PagoState extends ChangeNotifier {
   bool? stateBackup;
   stateProcess backupProcess = stateProcess(mystate: null, message: null);
   stateProcess pagoProcess = stateProcess(mystate: null, message: null);
+  stateProcess searchProcess = stateProcess(mystate: null, message: null);
   int folioProccess = 0;
   final dataBaseSql3Name = 'sistemaData.db';
   var connectionUri = globals.connectionPostgreSQL;
@@ -229,6 +230,7 @@ class PagoState extends ChangeNotifier {
   }
 
   void queryByNamePostgreSQL(String name) async {
+    searchProcess.mystate = null;
     var conn = await openConnection();
     pagoList = <Pago>[];
     await conn
@@ -239,14 +241,25 @@ class PagoState extends ChangeNotifier {
           return result;
         })
         .then((value) => {
-              //print("$value"),
-              pagoList = List.generate(value.length, (i) {
-                return Pago.fromJson(value[i]['']);
-              }),
+              if (value.length > 0)
+                {
+                  pagoList = List.generate(value.length, (i) {
+                    return Pago.fromJson(value[i]['']);
+                  }),
+                  searchProcess.mystate = true,
+                  searchProcess.message = "",
+                }
+              else
+                {
+                  searchProcess.mystate = false,
+                  searchProcess.message = "noEncontrado",
+                },
               notifyListeners()
             })
         .onError((error, stackTrace) => {
               print(" error $error , stackTrace  $stackTrace"),
+              searchProcess.mystate = false,
+              searchProcess.message = "error",
               queryByNameSql3(name)
             });
   }

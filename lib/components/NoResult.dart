@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
 // ignore: must_be_immutable
-class LoadMessage extends StatelessWidget {
-  LoadMessage(this.messageError);
+class NoResult extends StatelessWidget {
+  NoResult(this.messageError);
   String messageError = '';
 
   @override
@@ -27,9 +27,9 @@ class LoadMessage extends StatelessWidget {
           children: [
             if (messageError.isNotEmpty)
               Lottie.asset(
-                'assets/animation_lmc3ujrk.json',
-                width: 75,
-                height: 75,
+                'assets/animation_lms0jjiw.json',
+                width: 120,
+                height: 120,
                 fit: BoxFit.fill,
               ),
             Padding(
@@ -38,13 +38,13 @@ class LoadMessage extends StatelessWidget {
                 alignment: Alignment.center,
                 child: Text(
                   messageError,
-                  textAlign: TextAlign.start,
+                  textAlign: TextAlign.center,
                   overflow: TextOverflow.clip,
                   style: TextStyle(
-                    fontWeight: FontWeight.w900,
+                    fontWeight: FontWeight.w600,
                     fontStyle: FontStyle.normal,
                     fontSize: 14,
-                    color: Color.fromARGB(255, 165, 0, 0),
+                    color: Color.fromARGB(255, 59, 33, 33),
                   ),
                 ),
               ),
