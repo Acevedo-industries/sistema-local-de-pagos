@@ -110,11 +110,11 @@ class DataCard extends StatelessWidget {
                       mainAxisSize: MainAxisSize.max,
                       children: [
                         Text(
-                          "Folio:        ",
+                          "FOLIO:        ",
                           textAlign: TextAlign.start,
                           overflow: TextOverflow.clip,
                           style: TextStyle(
-                            fontWeight: FontWeight.w400,
+                            fontWeight: FontWeight.w600,
                             fontStyle: FontStyle.normal,
                             fontSize: 14,
                             color: Color(0xff000000),
@@ -128,9 +128,10 @@ class DataCard extends StatelessWidget {
                             overflow: TextOverflow.clip,
                             style: TextStyle(
                               fontWeight: FontWeight.w600,
-                              fontStyle: FontStyle.normal,
+                              fontStyle: FontStyle.italic,
                               fontSize: 14,
                               color: Color(0xff000000),
+                              //decoration: TextDecoration.underline,
                             ),
                           ),
                         ),
@@ -145,11 +146,71 @@ class DataCard extends StatelessWidget {
                       mainAxisSize: MainAxisSize.max,
                       children: [
                         Text(
-                          "Periodo:   ",
+                          "NOMBRE:    ",
                           textAlign: TextAlign.start,
                           overflow: TextOverflow.clip,
                           style: TextStyle(
-                            fontWeight: FontWeight.w400,
+                            fontWeight: FontWeight.w600,
+                            fontStyle: FontStyle.normal,
+                            fontSize: 14,
+                            color: Color(0xff000000),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 1,
+                          child: TextField(
+                            enabled: enablefield,
+                            controller: nombreController,
+                            obscureText: false,
+                            textAlign: TextAlign.start,
+                            maxLines: 1,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w400,
+                              fontStyle: FontStyle.normal,
+                              fontSize: 14,
+                              color: Color(0xff000000),
+                            ),
+                            decoration: InputDecoration(
+                              disabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12.0),
+                                borderSide: BorderSide(
+                                    color: Color(0x80000000), width: 1),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12.0),
+                                borderSide: BorderSide(
+                                    color: Color(0x80000000), width: 1),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12.0),
+                                borderSide: BorderSide(
+                                    color: Color(0x80000000), width: 1),
+                              ),
+                              filled: true,
+                              //labelText: pago.nombre ?? '',
+                              fillColor: Color(0xfff2f2f3),
+                              isDense: false,
+                              contentPadding: EdgeInsets.symmetric(
+                                  vertical: 8, horizontal: 12),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 5, horizontal: 0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Text(
+                          "PERIODO:   ",
+                          textAlign: TextAlign.start,
+                          overflow: TextOverflow.clip,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
                             fontStyle: FontStyle.normal,
                             fontSize: 14,
                             color: Color(0xff000000),
@@ -210,11 +271,11 @@ class DataCard extends StatelessWidget {
                       mainAxisSize: MainAxisSize.max,
                       children: [
                         Text(
-                          "Fecha:     ",
+                          "FECHA:       ",
                           textAlign: TextAlign.start,
                           overflow: TextOverflow.clip,
                           style: TextStyle(
-                            fontWeight: FontWeight.w400,
+                            fontWeight: FontWeight.w600,
                             fontStyle: FontStyle.normal,
                             fontSize: 14,
                             color: Color(0xff000000),
@@ -274,71 +335,11 @@ class DataCard extends StatelessWidget {
                       mainAxisSize: MainAxisSize.max,
                       children: [
                         Text(
-                          "Nombre:  ",
+                          "CANTIDAD: ",
                           textAlign: TextAlign.start,
                           overflow: TextOverflow.clip,
                           style: TextStyle(
-                            fontWeight: FontWeight.w400,
-                            fontStyle: FontStyle.normal,
-                            fontSize: 14,
-                            color: Color(0xff000000),
-                          ),
-                        ),
-                        Expanded(
-                          flex: 1,
-                          child: TextField(
-                            enabled: enablefield,
-                            controller: nombreController,
-                            obscureText: false,
-                            textAlign: TextAlign.start,
-                            maxLines: 1,
-                            style: TextStyle(
-                              fontWeight: FontWeight.w400,
-                              fontStyle: FontStyle.normal,
-                              fontSize: 14,
-                              color: Color(0xff000000),
-                            ),
-                            decoration: InputDecoration(
-                              disabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12.0),
-                                borderSide: BorderSide(
-                                    color: Color(0x80000000), width: 1),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12.0),
-                                borderSide: BorderSide(
-                                    color: Color(0x80000000), width: 1),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12.0),
-                                borderSide: BorderSide(
-                                    color: Color(0x80000000), width: 1),
-                              ),
-                              filled: true,
-                              //labelText: pago.nombre ?? '',
-                              fillColor: Color(0xfff2f2f3),
-                              isDense: false,
-                              contentPadding: EdgeInsets.symmetric(
-                                  vertical: 8, horizontal: 12),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(vertical: 5, horizontal: 0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        Text(
-                          "Cantidad: ",
-                          textAlign: TextAlign.start,
-                          overflow: TextOverflow.clip,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w400,
+                            fontWeight: FontWeight.w600,
                             fontStyle: FontStyle.normal,
                             fontSize: 14,
                             color: Color(0xff000000),
@@ -399,11 +400,11 @@ class DataCard extends StatelessWidget {
                       mainAxisSize: MainAxisSize.max,
                       children: [
                         Text(
-                          "Nota:       ",
+                          "NOTA:         ",
                           textAlign: TextAlign.start,
                           overflow: TextOverflow.clip,
                           style: TextStyle(
-                            fontWeight: FontWeight.w400,
+                            fontWeight: FontWeight.w600,
                             fontStyle: FontStyle.normal,
                             fontSize: 14,
                             color: Color(0xff000000),

@@ -35,7 +35,7 @@ class HomeScreenMain extends StatelessWidget {
 }
 
 class HomeScreen extends StatelessWidget {
-  final myController = TextEditingController(text: "Albertha Navarro Flores");
+  final myController = TextEditingController(text: "");
 
   @override
   Widget build(BuildContext context) {
@@ -112,6 +112,7 @@ class HomeScreen extends StatelessWidget {
                       Expanded(
                         flex: 1,
                         child: TextField(
+                          autofocus: true,
                           controller:
                               myController, //.text= "Albertha Navarro Flores",
                           obscureText: false,

@@ -224,7 +224,7 @@ class PagoState extends ChangeNotifier {
   // *****************************************************************************
 
   void queryByName(String name) async {
-    final newname = name.trim().replaceAll(RegExp(r' '), '%');
+    final newname = name.trim().toLowerCase().replaceAll(RegExp(r' '), '%');
     return queryByNamePostgreSQL(newname);
   }
 
@@ -234,7 +234,7 @@ class PagoState extends ChangeNotifier {
     await conn
         .transaction((c) async {
           final result = await c.mappedResultsQuery(
-              "SELECT * FROM (SELECT * FROM pagostequio UNION SELECT * FROM pagospredial) as consulta1 WHERE \"NOMBRE\" like @aNombre ",
+              "SELECT * FROM (SELECT * FROM pagostequio UNION SELECT * FROM pagospredial) as consulta1 WHERE LOWER (\"NOMBRE\") like @aNombre ",
               substitutionValues: {"aNombre": "%$name%"});
           return result;
         })

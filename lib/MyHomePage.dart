@@ -115,8 +115,17 @@ class _MyHomePageState extends State<MyHomePage> {
                 extended: constraints.maxWidth >= 600,
                 destinations: [
                   NavigationRailDestination(
-                    icon: Icon(Icons.account_circle),
-                    label: Text(globals.userLogged?.username ?? 'Desconocido'),
+                    icon: Icon(
+                      Icons.account_circle,
+                      color: Color.fromARGB(255, 151, 64, 38),
+                    ),
+                    label: Text(
+                      globals.userLogged?.username ?? 'Desconocido',
+                      style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                          color: Color.fromARGB(255, 151, 64, 38)),
+                    ),
                   ),
                   if (globals.intRol <= 3)
                     NavigationRailDestination(
