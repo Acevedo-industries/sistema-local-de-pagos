@@ -13,7 +13,7 @@ import 'dart:io';
 class PagoState extends ChangeNotifier {
   var pagoList = <Pago>[];
   bool? stateBackup;
-
+  bool readFromServer = true;
   stateProcess backupProcess = stateProcess(mystate: null, message: null);
   stateProcess pagoProcess = stateProcess(mystate: null, message: null);
   stateProcess searchProcess = stateProcess(mystate: null, message: null);
@@ -237,6 +237,7 @@ class PagoState extends ChangeNotifier {
   void queryByNamePostgreSQL(String name) async {
     searchProcess.mystate = null;
     var conn = await openConnection();
+    readFromServer = true;
     pagoList = <Pago>[];
     await conn
         .transaction((c) async {
@@ -270,6 +271,7 @@ class PagoState extends ChangeNotifier {
   void queryByNameSql3(String name) async {
     var db = await openDatabase(dataBaseSql3Name);
     pagoList = <Pago>[];
+    readFromServer = false;
     await db
         .query("pagos",
             where: ' LOWER(nombre) LIKE ?', whereArgs: [("%$name%")])

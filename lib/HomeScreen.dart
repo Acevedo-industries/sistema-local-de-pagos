@@ -203,6 +203,24 @@ class HomeScreenState extends State<HomeScreenView> {
                 ),
               ),
             ),
+            if (appState.readFromServer == false)
+              Padding(
+                padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
+                child: Align(
+                  alignment: Alignment.topLeft,
+                  child: Text(
+                    "* Está leyendo los datos de la copia que obtuvo de la base de datos, esta información puede NO estar actualizada",
+                    textAlign: TextAlign.start,
+                    overflow: TextOverflow.clip,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w900,
+                      fontStyle: FontStyle.normal,
+                      fontSize: 14,
+                      color: Color(0xff7a0606),
+                    ),
+                  ),
+                ),
+              ),
             ListView(
               scrollDirection: Axis.vertical,
               padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
