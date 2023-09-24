@@ -1,3 +1,4 @@
+import 'package:app/PagosWraper.dart';
 import 'package:app/stateProcess.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
@@ -12,6 +13,7 @@ import 'dart:io';
 class PagoState extends ChangeNotifier {
   var pagoList = <Pago>[];
   bool? stateBackup;
+
   stateProcess backupProcess = stateProcess(mystate: null, message: null);
   stateProcess pagoProcess = stateProcess(mystate: null, message: null);
   stateProcess searchProcess = stateProcess(mystate: null, message: null);
@@ -122,7 +124,7 @@ class PagoState extends ChangeNotifier {
     return pagoData;
   }
 
-  Future<List<Pago>> getTablePostgreSQL(String tipoPago) async {
+  Future<PagosWraper> getTablePostgreSQL(String tipoPago) async {
     var conn = await openConnection();
     var pagoTequios = <Pago>[];
     String tablename = "";
@@ -150,13 +152,14 @@ class PagoState extends ChangeNotifier {
               pagoTequios = []
             });
 
-    return pagoTequios;
+    return PagosWraper(pagoPredial: pagoTequios, readServer: true);
   }
 
-  Future<List<Pago>> getTableSql3(String tipoPago) async {
+  Future<PagosWraper> getTableSql3(String tipoPago) async {
     var db = await openDatabase(dataBaseSql3Name);
 
     var pagoPredial = <Pago>[];
+    bool readServer = true;
     await db
         .query("pagos", where: 'tipo = ?', whereArgs: [tipoPago])
         .then((value) => {
@@ -176,7 +179,9 @@ class PagoState extends ChangeNotifier {
                   'tipo': value[i]["tipo"]
                 });
                 return mipago;
-              })
+              }),
+              readServer = false,
+              notifyListeners()
             })
         .onError((error, stackTrace) => {
               print(" error $error , stackTrace  $stackTrace"),
@@ -195,14 +200,14 @@ class PagoState extends ChangeNotifier {
 
     await db.close();
 
-    return pagoPredial;
+    return PagosWraper(pagoPredial: pagoPredial, readServer: readServer);
   }
 
 // *****************************************************************************
 
-  Future<List<Pago>> getTequios() async {
+  Future<PagosWraper> getTequios() async {
     var resultPosgreql = await getTablePostgreSQL("tequio");
-    if (resultPosgreql.isEmpty) {
+    if (resultPosgreql.pagoPredial.isEmpty) {
       print("buscando en sqlite3");
       return getTableSql3("tequio");
     } else {
@@ -211,9 +216,9 @@ class PagoState extends ChangeNotifier {
     }
   }
 
-  Future<List<Pago>> getPrediales() async {
+  Future<PagosWraper> getPrediales() async {
     var resultPosgreql = await getTablePostgreSQL("predial");
-    if (resultPosgreql.isEmpty) {
+    if (resultPosgreql.pagoPredial.isEmpty) {
       print("buscando en sqlite3");
       return getTableSql3("predial");
     } else {
