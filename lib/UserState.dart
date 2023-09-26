@@ -11,9 +11,10 @@ class UserState extends ChangeNotifier {
   var usuariosList = <Usuario>[];
   Usuario? findUser;
   stateProcess userProcess = stateProcess(mystate: null, message: null);
+  String salt = '\$2b\$12\$WIRSi4IQLlApudMNKIlfl.';
 
   String hashedPassword(String plainPassword) {
-    return DBCrypt().hashpw(plainPassword, DBCrypt().gensalt());
+    return DBCrypt().hashpw(plainPassword, salt);
   }
 
   bool isCorrect(plain, hashed) {
@@ -131,7 +132,7 @@ class UserState extends ChangeNotifier {
 
   void queryByUsernameAndPassword(String username, String password) async {
     final newUsername = username.trim();
-    final newPassword = password.trim();
+    final newPassword = hashedPassword(password.trim());
 
     var conn = await openConnection();
 
