@@ -37,6 +37,7 @@ class LoginScreenState extends State<LoginScreenView> {
   String textMessageError = '';
   String offlineMessageError = '';
   bool buttonEnable = true;
+  bool _passwordVisible = false;
 
   void _changedTextMessageError(String text) {
     setState(() {
@@ -151,6 +152,7 @@ class LoginScreenState extends State<LoginScreenView> {
                         borderSide:
                             BorderSide(color: Color(0x00ffffff), width: 1),
                       ),
+                      labelText: 'Usuario',
                       hintText: "Usuario",
                       hintStyle: TextStyle(
                         fontWeight: FontWeight.w400,
@@ -167,18 +169,12 @@ class LoginScreenState extends State<LoginScreenView> {
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.fromLTRB(0, 0, 0, 16),
-                  child: TextField(
+                  padding: EdgeInsets.symmetric(vertical: 5, horizontal: 0),
+                  child: TextFormField(
+                    keyboardType: TextInputType.text,
                     controller: passwordController,
-                    obscureText: false,
-                    textAlign: TextAlign.start,
-                    maxLines: 1,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w400,
-                      fontStyle: FontStyle.normal,
-                      fontSize: 14,
-                      color: Color(0xff000000),
-                    ),
+                    obscureText:
+                        !_passwordVisible, //This will obscure text dynamically
                     decoration: InputDecoration(
                       disabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12.0),
@@ -195,7 +191,8 @@ class LoginScreenState extends State<LoginScreenView> {
                         borderSide:
                             BorderSide(color: Color(0x00ffffff), width: 1),
                       ),
-                      hintText: "Contraseña",
+                      labelText: 'Contraseña',
+                      hintText: 'Enter your password',
                       hintStyle: TextStyle(
                         fontWeight: FontWeight.w400,
                         fontStyle: FontStyle.normal,
@@ -207,6 +204,23 @@ class LoginScreenState extends State<LoginScreenView> {
                       isDense: false,
                       contentPadding:
                           EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+
+                      // Here is key idea
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                            // Based on passwordVisible state choose the icon
+                            _passwordVisible
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                            color: Color(0xff9f9d9d),
+                            size: 20),
+                        onPressed: () {
+                          // Update the state i.e. toogle the state of passwordVisible variable
+                          setState(() {
+                            _passwordVisible = !_passwordVisible;
+                          });
+                        },
+                      ),
                     ),
                   ),
                 ),
