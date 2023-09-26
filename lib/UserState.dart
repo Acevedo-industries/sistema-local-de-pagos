@@ -12,13 +12,14 @@ class UserState extends ChangeNotifier {
   Usuario? findUser;
   stateProcess userProcess = stateProcess(mystate: null, message: null);
   String salt = '\$2b\$12\$WIRSi4IQLlApudMNKIlfl.';
+  DBCrypt dbcrypt = DBCrypt();
 
   String hashedPassword(String plainPassword) {
-    return DBCrypt().hashpw(plainPassword, salt);
+    return dbcrypt.hashpw(plainPassword, salt);
   }
 
   bool isCorrect(plain, hashed) {
-    return DBCrypt().checkpw(plain, hashed);
+    return dbcrypt.checkpw(plain, hashed);
   }
 
   static Future<PostgreSQLConnection> openConnection() async {
@@ -35,13 +36,27 @@ class UserState extends ChangeNotifier {
     return connection;
   }
 
-  void changePasswordUser(Usuario newUsuario) async {
+  void changePasswordUser(Usuario newUsuario, String confirmPasswordController,
+      String passwordSuperadminController) async {
     var conn = await openConnection();
 
     if (newUsuario.username == "" || newUsuario.contrasenia == "") {
       userProcess.mystate = false;
       userProcess.message =
           "El usuario y la contraseña no pueden estar vacios, intente nuevamente";
+      notifyListeners();
+    } else if (newUsuario.contrasenia?.compareTo(confirmPasswordController) !=
+        0) {
+      userProcess.mystate = false;
+      userProcess.message =
+          "Las contraseñas no son iguales, intente nuevamente";
+      notifyListeners();
+    } else if (isCorrect(
+            passwordSuperadminController, globals.userLogged!.contrasenia!) ==
+        false) {
+      userProcess.mystate = false;
+      userProcess.message =
+          "La contraseña del superadministrador es incorrecta, intente nuevamente";
       notifyListeners();
     } else {
       conn
@@ -50,12 +65,13 @@ class UserState extends ChangeNotifier {
                 "UPDATE usuarios SET contrasenia=@aPassword WHERE username = @aUsername",
                 substitutionValues: {
                   "aUsername": newUsuario.username.toString().trim(),
-                  "aPassword": newUsuario.contrasenia.toString().trim()
+                  "aPassword":
+                      hashedPassword(newUsuario.contrasenia.toString().trim())
                 });
             return result;
           })
           .then((value) => {
-                print("---------------------->> $value"),
+                print(""),
                 if (value == 1)
                   {
                     userProcess.mystate = true,
@@ -96,7 +112,8 @@ class UserState extends ChangeNotifier {
           "Las contraseñas no son iguales, intente nuevamente";
       notifyListeners();
     } else if (isCorrect(
-        passwordSuperadminController, globals.userLogged!.contrasenia!)) {
+            passwordSuperadminController, globals.userLogged!.contrasenia!) ==
+        false) {
       userProcess.mystate = false;
       userProcess.message =
           "La contraseña del superadministrador es incorrecta, intente nuevamente";
@@ -108,7 +125,8 @@ class UserState extends ChangeNotifier {
                 "INSERT INTO usuarios (username, contrasenia, rol) values (@aUsername, @aPassword, @aRol)",
                 substitutionValues: {
                   "aUsername": newUsuario.username.toString().trim(),
-                  "aPassword": newUsuario.contrasenia.toString().trim(),
+                  "aPassword":
+                      hashedPassword(newUsuario.contrasenia.toString().trim()),
                   "aRol": "administrador"
                 });
             return result;

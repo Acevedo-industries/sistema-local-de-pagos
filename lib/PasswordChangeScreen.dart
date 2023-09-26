@@ -34,8 +34,13 @@ class PasswordChangeScreenView extends StatefulWidget {
 class PasswordChangeScreenState extends State<PasswordChangeScreenView> {
   final userController = TextEditingController();
   final passwordController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
+  final passwordSuperadminController = TextEditingController();
 
   bool buttonEnable = true;
+  bool _passwordVisible = false;
+  bool _passwordConfirmVisible = false;
+  bool _passwordSuperadminVisible = false;
 
   void _changedButtonEnable(bool value) {
     setState(() {
@@ -123,6 +128,7 @@ class PasswordChangeScreenState extends State<PasswordChangeScreenView> {
                         borderSide:
                             BorderSide(color: Color(0x00ffffff), width: 1),
                       ),
+                      labelText: 'Usuario',
                       hintText: "Usuario",
                       hintStyle: TextStyle(
                         fontWeight: FontWeight.w400,
@@ -140,17 +146,11 @@ class PasswordChangeScreenState extends State<PasswordChangeScreenView> {
                 ),
                 Padding(
                   padding: EdgeInsets.symmetric(vertical: 5, horizontal: 0),
-                  child: TextField(
+                  child: TextFormField(
+                    keyboardType: TextInputType.text,
                     controller: passwordController,
-                    obscureText: false,
-                    textAlign: TextAlign.start,
-                    maxLines: 1,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w400,
-                      fontStyle: FontStyle.normal,
-                      fontSize: 14,
-                      color: Color(0xff000000),
-                    ),
+                    obscureText:
+                        !_passwordVisible, //This will obscure text dynamically
                     decoration: InputDecoration(
                       disabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12.0),
@@ -167,7 +167,8 @@ class PasswordChangeScreenState extends State<PasswordChangeScreenView> {
                         borderSide:
                             BorderSide(color: Color(0x00ffffff), width: 1),
                       ),
-                      hintText: "Contraseña",
+                      labelText: 'Nueva contraseña',
+                      hintText: 'Nuevo contraseña',
                       hintStyle: TextStyle(
                         fontWeight: FontWeight.w400,
                         fontStyle: FontStyle.normal,
@@ -179,8 +180,136 @@ class PasswordChangeScreenState extends State<PasswordChangeScreenView> {
                       isDense: false,
                       contentPadding:
                           EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                      suffixIcon: Icon(Icons.visibility,
-                          color: Color(0xff9f9d9d), size: 20),
+
+                      // Here is key idea
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                            // Based on passwordVisible state choose the icon
+                            _passwordVisible
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                            color: Color(0xff9f9d9d),
+                            size: 20),
+                        onPressed: () {
+                          // Update the state i.e. toogle the state of passwordVisible variable
+                          setState(() {
+                            _passwordVisible = !_passwordVisible;
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 5, horizontal: 0),
+                  child: TextFormField(
+                    keyboardType: TextInputType.text,
+                    controller: confirmPasswordController,
+                    obscureText:
+                        !_passwordConfirmVisible, //This will obscure text dynamically
+                    decoration: InputDecoration(
+                      disabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12.0),
+                        borderSide:
+                            BorderSide(color: Color(0x00ffffff), width: 1),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12.0),
+                        borderSide:
+                            BorderSide(color: Color(0x00ffffff), width: 1),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12.0),
+                        borderSide:
+                            BorderSide(color: Color(0x00ffffff), width: 1),
+                      ),
+                      labelText: 'Repita la nueva contraseña',
+                      hintText: 'Repita la nueva contraseña',
+                      hintStyle: TextStyle(
+                        fontWeight: FontWeight.w400,
+                        fontStyle: FontStyle.normal,
+                        fontSize: 14,
+                        color: Color(0xff9f9d9d),
+                      ),
+                      filled: true,
+                      fillColor: Color.fromARGB(255, 243, 242, 242),
+                      isDense: false,
+                      contentPadding:
+                          EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+
+                      // Here is key idea
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                            // Based on passwordVisible state choose the icon
+                            _passwordConfirmVisible
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                            color: Color(0xff9f9d9d),
+                            size: 20),
+                        onPressed: () {
+                          // Update the state i.e. toogle the state of passwordVisible variable
+                          setState(() {
+                            _passwordConfirmVisible = !_passwordConfirmVisible;
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 5, horizontal: 0),
+                  child: TextFormField(
+                    keyboardType: TextInputType.text,
+                    controller: passwordSuperadminController,
+                    obscureText:
+                        !_passwordSuperadminVisible, //This will obscure text dynamically
+                    decoration: InputDecoration(
+                      disabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12.0),
+                        borderSide:
+                            BorderSide(color: Color(0x00ffffff), width: 1),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12.0),
+                        borderSide:
+                            BorderSide(color: Color(0x00ffffff), width: 1),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12.0),
+                        borderSide:
+                            BorderSide(color: Color(0x00ffffff), width: 1),
+                      ),
+                      labelText: 'Escriba la contraseña del superadministrador',
+                      hintText: 'Escriba la contraseña del superadministrador',
+                      hintStyle: TextStyle(
+                        fontWeight: FontWeight.w400,
+                        fontStyle: FontStyle.normal,
+                        fontSize: 14,
+                        color: Color(0xff9f9d9d),
+                      ),
+                      filled: true,
+                      fillColor: Color.fromARGB(255, 243, 242, 242),
+                      isDense: false,
+                      contentPadding:
+                          EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+
+                      // Here is key idea
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                            // Based on passwordVisible state choose the icon
+                            _passwordSuperadminVisible
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                            color: Color(0xff9f9d9d),
+                            size: 20),
+                        onPressed: () {
+                          // Update the state i.e. toogle the state of passwordVisible variable
+                          setState(() {
+                            _passwordSuperadminVisible =
+                                !_passwordSuperadminVisible;
+                          });
+                        },
+                      ),
                     ),
                   ),
                 ),
@@ -190,10 +319,13 @@ class PasswordChangeScreenState extends State<PasswordChangeScreenView> {
                     child: MaterialButton(
                       onPressed: () {
                         _changedButtonEnable(false);
-                        appState.changePasswordUser(Usuario(
-                            username: userController.text,
-                            contrasenia: passwordController.text,
-                            rol: "administrador"));
+                        appState.changePasswordUser(
+                            Usuario(
+                                username: userController.text,
+                                contrasenia: passwordController.text,
+                                rol: "administrador"),
+                            confirmPasswordController.text,
+                            passwordSuperadminController.text);
                       },
                       color: buttonEnable
                           ? Color(0xffff5630)
