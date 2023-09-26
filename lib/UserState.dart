@@ -5,11 +5,20 @@ import 'dart:async';
 import 'package:postgres/postgres.dart';
 import 'Usuario.dart';
 import 'globals.dart' as globals;
+import 'package:dbcrypt/dbcrypt.dart';
 
 class UserState extends ChangeNotifier {
   var usuariosList = <Usuario>[];
   Usuario? findUser;
   stateProcess userProcess = stateProcess(mystate: null, message: null);
+
+  String hashedPassword(String plainPassword) {
+    return DBCrypt().hashpw(plainPassword, DBCrypt().gensalt());
+  }
+
+  bool isCorrect(plain, hashed) {
+    return DBCrypt().checkpw(plain, hashed);
+  }
 
   static Future<PostgreSQLConnection> openConnection() async {
     Map<String, dynamic> jsonData = globals.connectionPostgreSQL;
@@ -70,13 +79,26 @@ class UserState extends ChangeNotifier {
     }
   }
 
-  void saveUser(Usuario newUsuario) async {
+  void saveUser(Usuario newUsuario, String confirmPasswordController,
+      String passwordSuperadminController) async {
     var conn = await openConnection();
 
     if (newUsuario.username == "" || newUsuario.contrasenia == "") {
       userProcess.mystate = false;
       userProcess.message =
           "El usuario y la contraseña no pueden estar vacios, intente nuevamente";
+      notifyListeners();
+    } else if (newUsuario.contrasenia?.compareTo(confirmPasswordController) !=
+        0) {
+      userProcess.mystate = false;
+      userProcess.message =
+          "Las contraseñas no son iguales, intente nuevamente";
+      notifyListeners();
+    } else if (isCorrect(
+        passwordSuperadminController, globals.userLogged!.contrasenia!)) {
+      userProcess.mystate = false;
+      userProcess.message =
+          "La contraseña del superadministrador es incorrecta, intente nuevamente";
       notifyListeners();
     } else {
       conn
@@ -116,7 +138,7 @@ class UserState extends ChangeNotifier {
     conn
         .transaction((c) async {
           final result = await c.query(
-              "SELECT username, rol FROM usuarios WHERE username = @aUsername and contrasenia = @aPassword",
+              "SELECT username, rol, contrasenia  FROM usuarios WHERE username = @aUsername and contrasenia = @aPassword",
               substitutionValues: {
                 "aUsername": newUsername,
                 "aPassword": newPassword,
@@ -128,7 +150,9 @@ class UserState extends ChangeNotifier {
               if (value.isNotEmpty)
                 {
                   findUser = Usuario(
-                      username: value[0][0], contrasenia: "", rol: value[0][1])
+                      username: value[0][0],
+                      contrasenia: value[0][2],
+                      rol: value[0][1])
                 }
               else
                 {

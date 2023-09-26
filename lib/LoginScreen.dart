@@ -192,7 +192,7 @@ class LoginScreenState extends State<LoginScreenView> {
                             BorderSide(color: Color(0x00ffffff), width: 1),
                       ),
                       labelText: 'Contraseña',
-                      hintText: 'Enter your password',
+                      hintText: 'Contraseña',
                       hintStyle: TextStyle(
                         fontWeight: FontWeight.w400,
                         fontStyle: FontStyle.normal,

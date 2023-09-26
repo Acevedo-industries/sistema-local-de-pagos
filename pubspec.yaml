@@ -23,6 +23,7 @@ dependencies:
   lottie: ^2.6.0
   postgres: ^2.6.2
   date_format: ^2.0.7
+  dbcrypt: ^2.0.0
 
 dev_dependencies:
   flutter_test:
