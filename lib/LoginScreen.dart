@@ -32,8 +32,8 @@ class LoginScreenView extends StatefulWidget {
 }
 
 class LoginScreenState extends State<LoginScreenView> {
-  final userController = TextEditingController(text: "superadmin");
-  final passwordController = TextEditingController(text: "8ggf7d78d7");
+  final userController = TextEditingController(text: "");
+  final passwordController = TextEditingController(text: "");
   String textMessageError = '';
   String offlineMessageError = '';
   bool buttonEnable = true;
