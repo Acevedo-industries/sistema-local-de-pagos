@@ -24,6 +24,7 @@ dependencies:
   postgres: ^2.6.2
   date_format: ^2.0.7
   dbcrypt: ^2.0.0
+  sqlite3_flutter_libs: ^0.5.17
 
 dev_dependencies:
   flutter_test:
