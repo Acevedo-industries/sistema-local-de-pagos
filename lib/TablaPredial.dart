@@ -28,7 +28,7 @@ class PlutoGridState extends State<PlutoGridExamplePage> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: _pagoState.getTequios(),
+        future: _pagoState.getPrediales(),
         builder: (context, AsyncSnapshot<PagosWraper> tequios) {
           if (tequios.hasData) {
             if (tequios.data!.pagoPredial[0].tipo == null) {
