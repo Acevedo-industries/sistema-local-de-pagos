@@ -29,6 +29,7 @@ final List<PlutoColumn> columnsTablePagos = <PlutoColumn>[
       return PlutoAggregateColumnFooter(
         rendererContext: rendererContext,
         formatAsCurrency: true,
+        filter: (cell) => cell.row.toJson()['folio'] != 0,
         type: PlutoAggregateColumnType.sum,
         format: '#,###',
         alignment: Alignment.center,

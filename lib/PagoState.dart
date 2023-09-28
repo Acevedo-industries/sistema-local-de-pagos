@@ -128,27 +128,31 @@ class PagoState extends ChangeNotifier {
     var conn = await openConnection();
     var pagoTequios = <Pago>[];
     String tablename = "";
+    String tablename2 = "";
 
     if (tipoPago == "tequio") {
       tablename = "pagostequio";
+      tablename2 = "pagostequioAnteriores";
     }
     if (tipoPago == "predial") {
       tablename = "pagospredial";
+      tablename2 = "pagospredialAnteriores";
     }
 
     await conn
         .transaction((c) async {
-          final result = await c.mappedResultsQuery("SELECT * FROM $tablename");
+          final result = await c.mappedResultsQuery(
+              "(SELECT * FROM $tablename) union (SELECT \"FECHA\",0 as \"FOLIO\",\"NOMBRE\",\"CANTIDAD\",\"PERIODO\", ' ' as \"NOTA\",tipo FROM \"$tablename2\") order by \"FOLIO\"");
           return result;
         })
         .then((value) => {
-              //print("$value"),
+              print(""),
               pagoTequios = List.generate(value.length, (i) {
-                return Pago.fromJson(value[i][tablename]);
+                return Pago.fromJson(value[i][""]);
               })
             })
         .onError((error, stackTrace) => {
-              // print(" error $error , stackTrace  $stackTrace"),
+              print(" error $error , stackTrace  $stackTrace"),
               pagoTequios = []
             });
 
@@ -205,26 +209,23 @@ class PagoState extends ChangeNotifier {
 
 // *****************************************************************************
 
-  Future<PagosWraper> getTequios() async {
-    var resultPosgreql = await getTablePostgreSQL("tequio");
+  Future<PagosWraper> getDataPagos(String nombrePago) async {
+    var resultPosgreql = await getTablePostgreSQL(nombrePago);
     if (resultPosgreql.pagoPredial.isEmpty) {
       print("buscando en sqlite3");
-      return getTableSql3("tequio");
+      return getTableSql3(nombrePago);
     } else {
       print("regresando el resultado de postgresql");
       return resultPosgreql;
     }
   }
 
+  Future<PagosWraper> getTequios() async {
+    return getDataPagos("tequio");
+  }
+
   Future<PagosWraper> getPrediales() async {
-    var resultPosgreql = await getTablePostgreSQL("predial");
-    if (resultPosgreql.pagoPredial.isEmpty) {
-      print("buscando en sqlite3");
-      return getTableSql3("predial");
-    } else {
-      print("regresando el resultado de postgresql");
-      return resultPosgreql;
-    }
+    return getDataPagos("predial");
   }
 
   // *****************************************************************************
