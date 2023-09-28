@@ -107,8 +107,16 @@ class PagoState extends ChangeNotifier {
 
     await conn
         .transaction((c) async {
-          final result = await c.mappedResultsQuery(
-              "SELECT * FROM (SELECT * FROM pagostequio UNION SELECT * FROM pagospredial) as consulta1");
+          final result = await c.mappedResultsQuery("""
+            (              
+              (SELECT * FROM pagostequio UNION SELECT * FROM pagospredial) 
+              UNION 
+              (
+                (SELECT "FECHA",0 as "FOLIO","NOMBRE","CANTIDAD","PERIODO", ' ' as "NOTA",tipo FROM "pagostequioAnteriores") 
+                UNION 
+                (SELECT "FECHA",0 as "FOLIO","NOMBRE","CANTIDAD","PERIODO", ' ' as "NOTA",tipo FROM "pagospredialAnteriores")
+              )
+            )""");
           return result;
         })
         .then((value) => {
@@ -165,7 +173,8 @@ class PagoState extends ChangeNotifier {
     var pagoPredial = <Pago>[];
     bool readServer = true;
     await db
-        .query("pagos", where: 'tipo = ?', whereArgs: [tipoPago])
+        .query("pagos",
+            where: 'tipo = ?', whereArgs: [tipoPago], orderBy: 'FOLIO')
         .then((value) => {
               print(""),
               pagoPredial = List.generate(value.length, (i) {
@@ -275,7 +284,8 @@ class PagoState extends ChangeNotifier {
     readFromServer = false;
     await db
         .query("pagos",
-            where: ' LOWER(nombre) LIKE ?', whereArgs: [("%$name%")])
+            where: ' FOLIO != 0 and LOWER(nombre) LIKE ?',
+            whereArgs: [("%$name%")])
         .then((value) => {
               print(""),
               if (value.length > 0)
