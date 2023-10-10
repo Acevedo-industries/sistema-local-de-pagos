@@ -25,6 +25,10 @@ dependencies:
   date_format: ^2.0.7
   dbcrypt: ^2.0.0
   sqlite3_flutter_libs: ^0.5.17
+  file_picker: ^5.5.0
+  path_provider: ^2.1.1
+  http: ^1.1.0
+  permission_handler: ^11.0.1
 
 dev_dependencies:
   flutter_test:

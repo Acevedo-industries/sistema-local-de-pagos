@@ -75,20 +75,20 @@ class SettingScreenState extends State<SettingScreenView> {
       body: Padding(
         padding: EdgeInsets.all(16),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisSize: MainAxisSize.max,
           children: [
             Padding(
               padding: EdgeInsets.fromLTRB(0, 0, 0, 20),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisSize: MainAxisSize.max,
                 children: [
-                  Expanded(
-                      flex: 1,
-                      child: MaterialButton(
+                  Column(
+                    children: [
+                      MaterialButton(
                         onPressed: () {
                           _changedButtonEnable(false);
                           appState.createBackupData();
@@ -103,16 +103,76 @@ class SettingScreenState extends State<SettingScreenView> {
                             EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                         textColor: Color(0xff000000),
                         height: 40,
-                        minWidth: 140,
+                        minWidth: 0,
                         child: Text(
-                          buttonEnable ? "Descargar datos" : "Descargando ... ",
+                          buttonEnable
+                              ? " Descargar copia de la Base de Datos "
+                              : "Descargando ... ",
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w400,
                             fontStyle: FontStyle.normal,
                           ),
                         ),
-                      )),
+                      ),
+                      SizedBox(height: 25), // Espacio entre los botones
+                      MaterialButton(
+                        onPressed: () {
+                          _changedButtonEnable(false);
+                          appState.createDumpSql();
+                        },
+                        color: Color(0xffffffff),
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.zero,
+                          side: BorderSide(color: Color(0xff808080), width: 1),
+                        ),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        textColor: Color(0xff000000),
+                        height: 40,
+                        minWidth: 0,
+                        child: Text(
+                          buttonEnable
+                              ? " Descargar Base de Datos en SQL "
+                              : "Creando ... ",
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                            fontStyle: FontStyle.normal,
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 25), // Espacio entre los botones
+                      MaterialButton(
+                        onPressed: () {
+                          _changedButtonEnable(false);
+                          appState.createDumpExcel();
+                        },
+                        color: Color(0xffffffff),
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.zero,
+                          side: BorderSide(color: Color(0xff808080), width: 1),
+                        ),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        textColor: Color(0xff000000),
+                        height: 40,
+                        minWidth: 0,
+                        child: Text(
+                          buttonEnable
+                              ? "Descargar Base de Datos en Excel"
+                              : "Creando ... ",
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                            fontStyle: FontStyle.normal,
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
                 ],
               ),
             ),

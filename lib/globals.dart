@@ -2,10 +2,12 @@ library my_prj.globals;
 
 import 'Usuario.dart';
 
+String urlServer = "http://neomatrix.servehttp.com:8080/";
+
 Usuario? userLogged = Usuario(username: "", contrasenia: "", rol: "");
 
 Map<String, dynamic> connectionPostgreSQL = {
-  'host': '192.168.0.57',
+  'host': '192.168.1.65',
   'port': 5433,
   'databaseName': 'sistema',
   'username': 'postgres',

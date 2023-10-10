@@ -1,14 +1,18 @@
 import 'package:app/PagosWraper.dart';
 import 'package:app/stateProcess.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'dart:async';
 import 'package:sqflite/sqflite.dart';
-//import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:date_format/date_format.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:postgres/postgres.dart';
 import 'Pago.dart';
 import 'globals.dart' as globals;
 import 'dart:io';
+import 'package:http/http.dart' as http;
 
 class PagoState extends ChangeNotifier {
   var pagoList = <Pago>[];
@@ -23,8 +27,17 @@ class PagoState extends ChangeNotifier {
 
 // -----------------------------------------------------------------------------
   Future<String> getPathDB() async {
-    String path = await getDatabasesPath();
-    var pathFile = join(path, dataBaseSql3Name);
+    var externalDir;
+    if (Platform.isWindows) {
+      // La aplicación se está ejecutando en Windows.
+      externalDir = await getApplicationDocumentsDirectory();
+    }
+
+    if (Platform.isAndroid) {
+      // Otra plataforma (por ejemplo, Android o iOS).
+      externalDir = await getExternalStorageDirectory();
+    }
+    var pathFile = '${externalDir?.path}/copiaDB';
     return pathFile;
   }
 
@@ -69,18 +82,143 @@ class PagoState extends ChangeNotifier {
   }
 
 // -----------------------------------------------------------------------------+
+  Future<bool> checkAndRequestStoragePermission() async {
+    if (Platform.isAndroid) {
+      final status = await Permission.storage.request();
+      return status.isGranted;
+    }
+    return true; // En otras plataformas, se asume que tienes permiso
+  }
 
   void createBackupData() async {
+    final hasPermission = await checkAndRequestStoragePermission();
     backupProcess.mystate = null;
     backupProcess.message = null;
-    var pathFile = await getPathDB();
-    print(pathFile);
-    var pagoList = await getDataPostgreSQL();
-    if (pagoList.isEmpty) {
-      backupProcess.mystate = false;
-      backupProcess.message = "No se encontro el servidor de Base de Datos.";
+    var filePath = await getPathDB();
+
+    print(filePath);
+
+    final directory = Directory(filePath);
+    if (await directory.exists()) {
+      print('El directorio ya existe.');
     } else {
-      await createBackup(pathFile, pagoList);
+      await directory.create(
+          recursive: true); // Crea el directorio y sus padres si no existen.
+      print('Directorio creado con éxito.');
+    }
+
+    // Solicitar permiso de almacenamiento
+    if (hasPermission) {
+      final response =
+          await http.get(Uri.parse("${globals.urlServer}/sqlite3"));
+      if (response.statusCode == 200) {
+        final bytes = response.bodyBytes;
+        final file = File("$filePath/$dataBaseSql3Name");
+        await file.writeAsBytes(bytes);
+        print('Copia de seguridad descargada en $filePath');
+        backupProcess.mystate = true;
+        backupProcess.message = "La descarga se realizó con éxito.";
+      } else {
+        backupProcess.mystate = false;
+        backupProcess.message =
+            "Error al descargar la copia de seguridad. Código de estado: ${response.statusCode}. \n\n\n\n";
+        print(
+            'Error al descargar la copia de seguridad. Código de estado: ${response.statusCode}');
+      }
+
+      print('Se ha creado un dump de la base de datos en $filePath');
+    } else {
+      backupProcess.mystate = false;
+      backupProcess.message =
+          "No se tienen los permisos para guardar el archivo en el dispositivo. \n";
+    }
+
+    notifyListeners();
+  }
+
+  void createDumpSql() async {
+    final hasPermission = await checkAndRequestStoragePermission();
+    if (hasPermission) {
+      final folderResult = await FilePicker.platform.getDirectoryPath();
+
+      if (folderResult != null) {
+        final now = DateTime.now();
+        final dateFormat = formatDate(now, [dd, '-', mm, '-', yyyy]);
+        final fileName = 'backup_$dateFormat.sql';
+        print(folderResult);
+        final filePath = '$folderResult/$fileName';
+
+        final response =
+            await http.get(Uri.parse("${globals.urlServer}/backupsql"));
+        if (response.statusCode == 200) {
+          final bytes = response.bodyBytes;
+          final file = File(filePath);
+          await file.writeAsBytes(bytes);
+          backupProcess.mystate = true;
+          backupProcess.message = "La descarga se realizó con éxito.";
+          print('Copia de seguridad descargada en $filePath');
+        } else {
+          backupProcess.mystate = false;
+          backupProcess.message =
+              "Error al descargar la copia de seguridad. Código de estado: ${response.statusCode}.";
+          print(
+              'Error al descargar la copia de seguridad. Código de estado: ${response.statusCode}');
+        }
+        print('Se ha creado un dump de la base de datos en $filePath');
+      } else {
+        backupProcess.mystate = false;
+        backupProcess.message =
+            "No se seleccionó ninguna carpeta para guardar los datos. \n";
+        print('No se seleccionó ninguna carpeta para el respaldo.');
+      }
+    } else {
+      backupProcess.mystate = false;
+      backupProcess.message =
+          "No se tienen los permisos para guardar el archivo en el dispositivo. \n";
+    }
+    notifyListeners();
+  }
+
+  void createDumpExcel() async {
+    final hasPermission = await checkAndRequestStoragePermission();
+    if (hasPermission) {
+      final folderResult = await FilePicker.platform.getDirectoryPath();
+
+      if (folderResult != null) {
+        final now = DateTime.now();
+        final dateFormat = formatDate(now, [dd, '-', mm, '-', yyyy]);
+        final fileName = 'backup_$dateFormat.xlsx';
+        print(folderResult);
+        final filePath = '$folderResult/$fileName';
+
+        final response =
+            await http.get(Uri.parse("${globals.urlServer}/backupexcel"));
+        if (response.statusCode == 200) {
+          final bytes = response.bodyBytes;
+          final file = File(filePath);
+          await file.writeAsBytes(bytes);
+          backupProcess.mystate = true;
+          backupProcess.message = "La descarga se realizó con éxito.";
+          print('Copia de seguridad descargada en $filePath');
+        } else {
+          backupProcess.mystate = false;
+          backupProcess.message =
+              "Error al descargar la copia de seguridad. Código de estado: ${response.statusCode}.";
+          print(
+              'Error al descargar la copia de seguridad. Código de estado: ${response.statusCode}');
+        }
+
+        print('Se ha creado un dump de la base de datos en $filePath');
+      } else {
+        backupProcess.mystate = false;
+        backupProcess.message =
+            "No se seleccionó ninguna carpeta para guardar los datos. \n";
+        print('No se seleccionó ninguna carpeta para el respaldo.');
+      }
+    } else {
+      backupProcess.mystate = false;
+      backupProcess.message =
+          "No se tienen los permisos para guardar el archivo en el dispositivo. \n";
     }
     notifyListeners();
   }
@@ -168,7 +306,8 @@ class PagoState extends ChangeNotifier {
   }
 
   Future<PagosWraper> getTableSql3(String tipoPago) async {
-    var db = await openDatabase(dataBaseSql3Name);
+    var filePath = await getPathDB();
+    var db = await openDatabase("$filePath/$dataBaseSql3Name");
 
     var pagoPredial = <Pago>[];
     bool readServer = true;
@@ -279,7 +418,8 @@ class PagoState extends ChangeNotifier {
   }
 
   void queryByNameSql3(String name) async {
-    var db = await openDatabase(dataBaseSql3Name);
+    var filePath = await getPathDB();
+    var db = await openDatabase("$filePath/$dataBaseSql3Name");
     pagoList = <Pago>[];
     readFromServer = false;
     await db
@@ -332,27 +472,6 @@ class PagoState extends ChangeNotifier {
               ]
             });
 
-    notifyListeners();
-  }
-
-  void addPago() {
-    //favorites.remove(current);
-    pagoList.add(Pago(
-        nombre: "Grisel Garcia Ramirez",
-        fecha: DateTime.now(),
-        folio: 1901,
-        cantidad: 50.0,
-        periodo: "2023",
-        nota: "",
-        tipo: "predial"));
-    pagoList.add(Pago(
-        nombre: "Grisel Garcia Ramirez",
-        fecha: DateTime.now(),
-        folio: 1902,
-        cantidad: 50.0,
-        periodo: "2022",
-        nota: "",
-        tipo: "tequio"));
     notifyListeners();
   }
 
