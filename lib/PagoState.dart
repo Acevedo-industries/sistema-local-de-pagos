@@ -13,6 +13,7 @@ import 'Pago.dart';
 import 'globals.dart' as globals;
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:device_info_plus/device_info_plus.dart';
 
 class PagoState extends ChangeNotifier {
   var pagoList = <Pago>[];
@@ -84,8 +85,15 @@ class PagoState extends ChangeNotifier {
 // -----------------------------------------------------------------------------+
   Future<bool> checkAndRequestStoragePermission() async {
     if (Platform.isAndroid) {
-      final status = await Permission.storage.request();
-      return status.isGranted;
+      final androidVersion = await DeviceInfoPlugin().androidInfo;
+      if ((androidVersion.version.sdkInt ?? 0) >= 30) {
+        final Map<Permission, PermissionStatus> permissionStatus =
+            await [Permission.manageExternalStorage].request();
+        return permissionStatus[Permission.manageExternalStorage] ==
+            PermissionStatus.granted;
+      } else {
+        return await Permission.storage.request().isGranted;
+      }
     }
     return true; // En otras plataformas, se asume que tienes permiso
   }
