@@ -39,12 +39,14 @@ class _MyHomePageState extends State<MyHomePage> {
         page = SettingScreen();
       } else if (selectedIndex == 5) {
         page = LoginScreen();
-        if (Platform.isAndroid) {
-          SystemNavigator.pop();
-        } else {
-          exit(0);
-        }
-        //Navigator.pop(context);
+
+        Future.delayed(Duration.zero, () {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => LoginScreen()),
+            (route) => false, // Esto elimina todas las rutas existentes
+          );
+        });
       } else {
         page = NoDataFoundScreen();
       }
@@ -65,12 +67,14 @@ class _MyHomePageState extends State<MyHomePage> {
         page = SettingScreen();
       } else if (selectedIndex == 7) {
         page = LoginScreen();
-        if (Platform.isAndroid) {
-          SystemNavigator.pop();
-        } else {
-          exit(0);
-        }
-        //Navigator.pop(context);
+
+        Future.delayed(Duration.zero, () {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => LoginScreen()),
+            (route) => false, // Esto elimina todas las rutas existentes
+          );
+        });
       } else {
         page = NoDataFoundScreen();
       }
@@ -95,12 +99,14 @@ class _MyHomePageState extends State<MyHomePage> {
         page = SettingScreen();
       } else if (selectedIndex == 9) {
         page = LoginScreen();
-        if (Platform.isAndroid) {
-          SystemNavigator.pop();
-        } else {
-          exit(0);
-        }
-        //Navigator.pop(context);
+
+        Future.delayed(Duration.zero, () {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => LoginScreen()),
+            (route) => false, // Esto elimina todas las rutas existentes
+          );
+        });
       } else {
         page = NoDataFoundScreen();
       }

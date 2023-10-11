@@ -2,7 +2,7 @@ library my_prj.globals;
 
 import 'Usuario.dart';
 
-String urlServer = "http://neomatrix.servehttp.com:8080/";
+String urlServer = "http://neomatrix.servehttp.com:8080";
 
 Usuario? userLogged = Usuario(username: "", contrasenia: "", rol: "");
 
