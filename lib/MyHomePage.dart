@@ -174,7 +174,10 @@ class _MyHomePageState extends State<MyHomePage> {
                       label: Text('Configuracion'),
                     ),
                   NavigationRailDestination(
-                    icon: Icon(Icons.exit_to_app),
+                    icon: Transform.rotate(
+                      angle: 180 * 3.1415926535 / 180,
+                      child: Icon(Icons.exit_to_app),
+                    ),
                     label: Text('Salir'),
                   ),
                 ],
