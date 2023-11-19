@@ -22,6 +22,7 @@ class PagoState extends ChangeNotifier {
   stateProcess backupProcess = stateProcess(mystate: null, message: null);
   stateProcess pagoProcess = stateProcess(mystate: null, message: null);
   stateProcess searchProcess = stateProcess(mystate: null, message: null);
+  stateProcess countProcess = stateProcess(mystate: null, message: null, value: null);
   int folioProccess = 0;
   final dataBaseSql3Name = 'sistemaData.db';
   var connectionUri = globals.connectionPostgreSQL;
@@ -564,5 +565,57 @@ class PagoState extends ChangeNotifier {
                   "Hubo un error al crear el registro del pago, por favor verifique los datos o intente mas tarde. \n\n\n\n $error",
               notifyListeners()
             });
+  }
+
+
+  void getUltimoPagoTequio() async {
+    var conn = await openConnection();
+    countProcess.mystate = null;
+    
+    await conn
+        .transaction((c) async {
+          final result = await c.mappedResultsQuery(
+              "SELECT count(\"FOLIO\") FROM pagostequio");
+          return result;
+        })
+        .then((value) => {
+              if (value.length > 0) {
+                  countProcess.mystate = true,
+                  countProcess.value = value[0][""]["count"] + 1,
+                }else{
+                  countProcess.mystate = false,
+                  countProcess.value = -1,
+                },
+              notifyListeners()
+            })
+        .onError((error, stackTrace) => {
+              print(" error $error , stackTrace  $stackTrace"),
+            });
+  }
+
+
+    void getUltimoPagoPredial() async {
+      var conn = await openConnection();
+      countProcess.mystate = null;
+      
+      await conn
+          .transaction((c) async {
+            final result = await c.mappedResultsQuery(
+                "SELECT count(\"FOLIO\") FROM pagospredial");
+            return result;
+          })
+          .then((value) => {
+                if (value.length > 0) {
+                    countProcess.mystate = true,
+                    countProcess.value = value[0][""]["count"] + 1,
+                  }else{
+                    countProcess.mystate = false,
+                    countProcess.value = -1,
+                  },
+                notifyListeners()
+              })
+          .onError((error, stackTrace) => {
+                print(" error $error , stackTrace  $stackTrace"),
+              });
   }
 }

@@ -1,8 +1,9 @@
 class stateProcess {
   bool? mystate;
   String? message;
+  int? value;
 
-  stateProcess({required mystate, required this.message});
+  stateProcess({required mystate, required this.message, value});
 
   stateProcess.fromJson(Map<String, dynamic> json)
       : mystate = json['mystate'],

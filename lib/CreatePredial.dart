@@ -60,6 +60,9 @@ class CreatePredialScreenState extends State<CreatePredialScreenView> {
   };
 
   bool enablefield = globals.enablefield;
+  late PagoState appState;
+  late bool unavez = false;
+
 
   String fechaString(DateTime? value) {
     if (value != null) {
@@ -73,6 +76,21 @@ class CreatePredialScreenState extends State<CreatePredialScreenView> {
     setState(() {
       buttonEnable = value;
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    appState = context.watch<PagoState>();
+    if(unavez == false){
+      appState.getUltimoPagoTequio();
+      unavez = true;
+    }
   }
 
   @override
@@ -204,7 +222,7 @@ class CreatePredialScreenState extends State<CreatePredialScreenView> {
                                     Expanded(
                                       flex: 1,
                                       child: Text(
-                                        '-'.toString(),
+                                        appState.countProcess.value?.toString() ?? "--",
                                         textAlign: TextAlign.start,
                                         overflow: TextOverflow.clip,
                                         style: TextStyle(

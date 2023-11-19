@@ -51,6 +51,7 @@ class CreateTequioScreenState extends State<CreateTequioScreenView> {
   final nombreController = TextEditingController();
   final cantidadController = TextEditingController();
   final notaController = TextEditingController();
+  late bool unavez = false;
   DateTime? dateValue;
 
   Map<String, Color> datacolor = {
@@ -60,6 +61,8 @@ class CreateTequioScreenState extends State<CreateTequioScreenView> {
   };
 
   bool enablefield = globals.enablefield;
+
+  late PagoState appState;
 
   String fechaString(DateTime? value) {
     if (value != null) {
@@ -76,8 +79,23 @@ class CreateTequioScreenState extends State<CreateTequioScreenView> {
   }
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    appState = context.watch<PagoState>();
+    if(unavez == false){
+      appState.getUltimoPagoTequio();
+      unavez = true;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    var appState = context.watch<PagoState>();
+    //var appState = context.watch<PagoState>();
     dateValue = DateTime.now();
     dateController.text = fechaString(DateTime.now());
     periodoController.text = "";
@@ -204,7 +222,7 @@ class CreateTequioScreenState extends State<CreateTequioScreenView> {
                                     Expanded(
                                       flex: 1,
                                       child: Text(
-                                        '-'.toString(),
+                                        appState.countProcess.value?.toString() ?? "--",
                                         textAlign: TextAlign.start,
                                         overflow: TextOverflow.clip,
                                         style: TextStyle(
