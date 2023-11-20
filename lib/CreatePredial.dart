@@ -88,7 +88,7 @@ class CreatePredialScreenState extends State<CreatePredialScreenView> {
     super.didChangeDependencies();
     appState = context.watch<PagoState>();
     if(unavez == false){
-      appState.getUltimoPagoTequio();
+      appState.getUltimoPagoPredial();
       unavez = true;
     }
   }
