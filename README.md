@@ -16,15 +16,20 @@ For help getting started with Flutter development, view the
 samples, guidance on mobile development, and a full API reference.
 
 
-run in local
+## Run in windows
 
+```sh
 flutter run -d Windows
+```
 
-Create exe file
+### Create exe file
 
+```sh
 flutter build windows
-
+```
+```sh
 build\windows\runner\Release
+
 C:.
 │   app.exe
 │   file_selector_windows_plugin.dll
@@ -64,11 +69,20 @@ C:.
         │
         └───shaders
                 ink_sparkle.frag
+```
+## Run in android
 
-Create APK
+### Create APK
 
+```sh
 flutter build apk --release
-
+```
+```sh
 build\app\outputs\flutter-apk\app-release.apk
 
+C:.
+    app-release.apk
+    app-release.apk.sha1
+
 copy to /salida
+```
