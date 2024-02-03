@@ -70,6 +70,9 @@ C:.
         └───shaders
                 ink_sparkle.frag
 ```
+
+If you do not have the dlls in the list, you can find them in the /misDLLS folder.
+
 ## Run in android
 
 ### Create APK
